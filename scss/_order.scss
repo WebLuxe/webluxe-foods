@@ -29,7 +29,7 @@
     h2 { font-size: 2.1rem; margin-bottom: 8px; }
   }
   &__sub { display: flex; align-items: center; gap: 8px; margin: 24px 0 12px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
-  &__foot { padding: 12px 20px calc(14px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid $line; }
+  &__foot { padding: 12px 20px calc(14px + env(safe-area-inset-bottom)); background: $paper; border-top: 1px solid $line; }
   &__total {
     display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;
     span { font-weight: 700; small { color: $muted; font-weight: 600; margin-left: 4px; } }
@@ -64,7 +64,7 @@
 }
 .pillnote {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 12px; border-radius: 999px;
+  padding: 6px 12px; border-radius: 2px;
   background: rgba($green, 0.12); color: #007a38;
   font-size: 0.78rem; font-weight: 800;
   margin-bottom: 4px;
@@ -75,7 +75,7 @@
   display: flex;
   gap: 14px;
   padding: 16px 0;
-  border-bottom: 2px dashed $line;
+  border-bottom: 1px solid $line;
   > img { flex: none; width: 72px; height: 72px; border-radius: 16px; object-fit: cover; background: $cream-2; }
   &__main { flex: 1; min-width: 0; }
   &__top { display: flex; justify-content: space-between; gap: 12px; b { font-size: 1.02rem; } span { font-family: $font-display; font-size: 1.15rem; white-space: nowrap; font-variant-numeric: tabular-nums; } }
@@ -96,11 +96,11 @@
     padding: 14px 16px;
     border-radius: $radius-sm;
     border: 1.5px solid $line;
-    background: #fff;
+    background: $paper;
     outline: 0;
     font-weight: 600;
     font-size: 16px; // stops iOS zooming the page on focus
-    &:focus { border-color: $ink; box-shadow: 0 0 0 4px rgba($gold, 0.45); }
+    &:focus { border-color: $gold-deep; }
     &::placeholder { color: rgba($muted, 0.7); font-weight: 500; }
   }
   textarea { resize: vertical; }
@@ -124,7 +124,7 @@
     min-height: 52px;
     padding: 10px 14px;
     border-radius: $radius-sm;
-    background: #fff;
+    background: $paper;
     border: 2px solid transparent;
     transition: border-color 0.15s, background 0.15s;
     b { font-size: 0.96rem; }
@@ -140,7 +140,7 @@
   margin-top: 12px;
   padding: 16px;
   border-radius: $radius-sm;
-  background: #fff;
+  background: $paper;
   div { display: flex; justify-content: space-between; gap: 14px; font-size: 0.9rem; }
   span { color: $muted; font-weight: 600; }
   b { text-align: right; overflow-wrap: anywhere; }
@@ -150,13 +150,13 @@
   display: grid;
   gap: 8px;
   div { display: flex; justify-content: space-between; color: $ink-3; font-size: 0.92rem; }
-  &__big { padding-top: 12px; margin-top: 4px; border-top: 2px dashed $line; color: $ink !important; dt { font-weight: 800; } dd { font-family: $font-display; font-size: 1.6rem; } }
+  &__big { padding-top: 12px; margin-top: 4px; border-top: 1px solid $line; color: $ink !important; dt { font-weight: 800; } dd { font-family: $font-display; font-size: 1.6rem; } }
 }
 
 // ---------- Orders list ----------
 .orders { padding-top: 30px; display: grid; gap: 14px; max-width: 860px; }
 .ocard {
-  background: #fff;
+  background: $paper;
   border-radius: $radius;
   box-shadow: $shadow-sm;
   overflow: hidden;
@@ -198,7 +198,7 @@
   // Perforated tear line
   &__tear {
     margin: 22px -22px;
-    border-top: 3px dashed rgba(255, 255, 255, 0.22);
+    border-top: 1px dashed rgba(255, 255, 255, 0.22);
     position: relative;
     @include up($bp-md) { margin-inline: -36px; }
     &::before, &::after { content: ''; position: absolute; top: -14px; width: 26px; height: 26px; border-radius: 50%; background: $cream; }
@@ -239,7 +239,7 @@
   gap: 14px;
   padding: 18px 20px;
   border-radius: $radius;
-  background: #fff;
+  background: $paper;
   box-shadow: $shadow-sm;
   border-left: 5px solid $wa;
   p { color: $muted; font-size: 0.9rem; }

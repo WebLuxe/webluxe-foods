@@ -15,13 +15,13 @@ body {
   background: $cream;
   color: $ink;
   font-family: $font-body;
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   overscroll-behavior-y: none;
   padding-bottom: calc(#{$tabbar-h} + env(safe-area-inset-bottom));
-  @include up($bp-md) { padding-bottom: 0; }
+  @include up($bp-md) { padding-bottom: 0; font-size: 16px; }
 }
 
 img { display: block; max-width: 100%; height: auto; }
@@ -33,38 +33,42 @@ h1, h2, h3, h4, p, ul, ol, dl, dd, figure, fieldset { margin: 0; padding: 0; }
 ul, ol { list-style: none; }
 fieldset { border: 0; min-width: 0; }
 [hidden] { display: none !important; }
-// `clip` (not `hidden`) so the tilted ticker can't widen the page while sticky bars keep working.
 main { display: block; min-height: 80vh; outline: none; overflow-x: clip; }
-main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
-@keyframes view-rise { from { opacity: 0; transform: translate3d(0, 26px, 0); } }
+// New page settles in under the burn: a gentle rise, staggered by block
+main.view-in > * { animation: view-rise 0.9s $ease-out backwards; }
+main.view-in > :nth-child(2) { animation-delay: 0.08s; }
+main.view-in > :nth-child(3) { animation-delay: 0.16s; }
+@keyframes view-rise { from { opacity: 0; transform: translate3d(0, 18px, 0); } }
 
 .wrap {
-  width: min(1240px, 100% - 40px);
+  width: min(1180px, 100% - 40px);
   margin-inline: auto;
-  @include up($bp-md) { width: min(1240px, 100% - 72px); }
+  @include up($bp-md) { width: min(1180px, 100% - 80px); }
 }
 
-.ic { width: 1.2em; height: 1.2em; flex: none; }
+.ic { width: 1.15em; height: 1.15em; flex: none; }
 .muted { color: $muted; }
 .hide-sm { @include down($bp-lg) { display: none !important; } }
 
-.display { @include display(clamp(2.3rem, 6vw, 4.4rem)); text-wrap: balance; }
+.display { @include display(clamp(2.4rem, 6vw, 4.2rem)); text-wrap: balance; em { font-style: italic; } }
+// Kicker above headings: tracked capitals with a hairline
 .script {
-  font-family: $font-script;
-  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
-  color: $red;
-  line-height: 1;
-  transform: rotate(-3deg);
-  transform-origin: left bottom;
-  margin-bottom: 6px;
+  @include label;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: $gold-deep;
+  margin-bottom: 14px;
+  &::before { content: ''; width: 28px; height: 1px; background: currentColor; flex: none; }
 }
-.kicker { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.kicker { @include label; }
 .price {
   font-family: $font-display;
-  font-size: 1.35rem;
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  font-size: 1.3rem;
   white-space: nowrap;
-  small { font-family: $font-body; font-size: 0.66rem; font-weight: 600; color: $muted; text-transform: uppercase; letter-spacing: 0.08em; }
+  font-variant-numeric: lining-nums;
+  small { font-family: $font-body; font-size: 0.6rem; font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.14em; margin-right: 2px; }
 }
 
 // ---------- Logo ----------
@@ -72,65 +76,65 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  &__mark { width: 36px; height: 36px; flex: none; }
+  &__mark { width: 30px; height: 30px; flex: none; }
   &__text {
     font-family: $font-display;
+    font-weight: 600;
     font-size: 1.45rem;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.01em;
     line-height: 1;
-    text-transform: uppercase;
     white-space: nowrap;
-    em { font-style: normal; color: $gold; margin-left: 0.28em; }
+    em { font-style: italic; font-weight: 500; color: $gold; margin-left: 0.22em; }
   }
-  &--lg { .logo__text { font-size: 2rem; } .logo__mark { width: 52px; height: 52px; } }
+  &--lg { .logo__text { font-size: 2rem; } .logo__mark { width: 40px; height: 40px; } }
 }
-
 
 // ---------- Buttons ----------
 .btn {
   --bg: #{$ink};
-  --fg: #fff;
+  --fg: #{$paper};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 22px;
-  border-radius: 999px;
+  gap: 12px;
+  min-height: 50px;
+  padding: 0 26px;
+  border-radius: $radius-sm;
   background: var(--bg);
   color: var(--fg);
-  font-weight: 800;
-  font-size: 0.92rem;
-  letter-spacing: 0.02em;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   white-space: nowrap;
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  transition: transform 0.3s $ease-out;
+  transition: transform 0.4s $ease-out, background-color 0.3s;
   @include focus-ring;
 
-  // Sheen sweep (pointer devices only)
+  // A brass wash rises from the bottom on hover (pointer devices only)
   &::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.3) 50%, transparent 65%);
-    transform: translateX(-120%);
-    transition: transform 0.7s $ease-out;
+    background: rgba(255, 255, 255, 0.12);
+    transform: translate3d(0, 101%, 0);
+    transition: transform 0.55s $ease-out;
   }
-  @include hover { transform: translateY(-2px); &::after { transform: translateX(120%); } .ic { transform: translateX(3px); } }
-  &:active { transform: scale(0.96); }
-  .ic { transition: transform 0.3s $ease-out; }
+  @include hover { &::after { transform: none; } .ic { transform: translateX(4px); } }
+  &:active { transform: scale(0.97); }
+  .ic { width: 16px; height: 16px; transition: transform 0.4s $ease-out; }
 
   &--red { --bg: #{$red}; }
   &--gold { --bg: #{$gold}; --fg: #{$ink}; }
   &--dark { --bg: #{$ink}; }
   &--wa { --bg: #{$wa}; }
-  &--ghost { --bg: rgba(255, 255, 255, 0.14); --fg: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.55); }
-  &--line { --bg: transparent; --fg: #{$ink}; box-shadow: inset 0 0 0 1.5px $ink; }
-  &--sm { min-height: 40px; padding: 0 16px; font-size: 0.82rem; }
-  &--lg { min-height: 56px; padding: 0 28px; font-size: 1rem; }
+  &--ghost { --bg: transparent; --fg: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6); }
+  &--line { --bg: transparent; --fg: #{$ink}; box-shadow: inset 0 0 0 1px $ink; &::after { background: rgba($ink, 0.06); } }
+  &--sm { min-height: 40px; padding: 0 16px; font-size: 0.66rem; }
+  &--lg { min-height: 56px; padding: 0 30px; }
   &--block { width: 100%; }
 }
 
@@ -140,8 +144,8 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(20, 16, 13, 0.07);
-  transition: transform 0.3s $ease-out;
+  background: rgba(23, 20, 17, 0.06);
+  transition: transform 0.4s $ease-out;
   @include focus-ring;
   @include hover { transform: rotate(90deg); }
   &:active { transform: scale(0.9); }
@@ -149,111 +153,111 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
 .text-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-height: 40px;
-  font-weight: 700;
-  font-size: 0.86rem;
+  @include label;
+  font-size: 0.64rem;
   color: $ink;
-  border-radius: 6px;
   @include focus-ring;
   @include hover { color: $red; }
+  .ic { width: 14px; height: 14px; }
   &--add { margin-top: 10px; color: $red; }
 }
 .link-arrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  border-bottom: 2px solid currentColor;
-  padding-bottom: 3px;
+  gap: 10px;
+  @include label;
+  padding-bottom: 6px;
+  border-bottom: 1px solid currentColor;
   @include focus-ring;
-  .ic { transition: transform 0.3s $ease-out; }
+  .ic { width: 15px; height: 15px; transition: transform 0.4s $ease-out; }
   @include hover { color: $red; .ic { transform: translateX(5px); } }
-  &--back { border: 0; color: #fff; min-height: 44px; @include hover { color: $gold; .ic { transform: translateX(-5px); } } }
+  &--back { border: 0; color: #fff; min-height: 44px; padding: 0; @include hover { color: $gold; .ic { transform: translateX(-5px); } } }
 }
 
 // ---------- Tags / chips / status ----------
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 9px;
-  border-radius: 999px;
-  background: #fff;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 2px;
+  background: rgba($paper, 0.94);
   color: $ink;
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  .ic { width: 12px; height: 12px; }
-  &--best { background: $gold; }
-  &--veg { background: $green; color: #fff; }
-  &--spicy { background: $red; color: #fff; }
-  &--new { background: $ink; color: #fff; }
+  .ic { width: 11px; height: 11px; }
+  &--best { background: $ink; color: $gold; }
+  &--veg { color: $green; }
+  &--spicy { color: $red; }
+  &--new { background: $red; color: #fff; }
 }
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 2px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   background: $cream-2;
-  .ic { width: 14px; height: 14px; }
-  &--received { background: rgba($blue, 0.12); color: $blue; }
-  &--preparing { background: rgba(#ff8a00, 0.18); color: #a85400; }
+  .ic { width: 13px; height: 13px; }
+  &--received { background: rgba($blue, 0.1); color: $blue; }
+  &--preparing { background: rgba($gold, 0.22); color: #6f5326; }
   &--ready { background: $green; color: #fff; }
-  &--collected { background: rgba($ink, 0.1); color: $ink; }
+  &--collected { background: rgba($ink, 0.08); color: $ink; }
 }
 .status {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   white-space: nowrap;
-  i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; position: relative; }
-  &.is-open i { background: #3ddc84; }
-  &.is-open i::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #3ddc84; animation: ping 2s $ease-out infinite; }
-  &.is-closed i { background: #ff8a8a; }
-  &--solid { padding: 6px 12px; border-radius: 999px; background: $cream-2; }
+  i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; position: relative; }
+  &.is-open i { background: #6fcf97; }
+  &.is-open i::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #6fcf97; animation: ping 2.4s $ease-out infinite; }
+  &.is-closed i { background: #e0a0a0; }
+  &--solid { padding: 6px 12px; border-radius: 2px; background: $cream-2; }
 }
-@keyframes ping { to { transform: scale(3.2); opacity: 0; } }
+@keyframes ping { to { transform: scale(3); opacity: 0; } }
 
 // ---------- Scroll reveal (animation, so it never fights hover transforms) ----------
 .reveal { opacity: 0; }
 .reveal.in {
   opacity: 1;
-  animation: reveal-in 0.7s $ease-out backwards;
-  animation-delay: calc(var(--i, 0) * 60ms);
+  animation: reveal-in 1s $ease-out backwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
 }
-@keyframes reveal-in { from { opacity: 0; transform: translate3d(0, 24px, 0); } }
+@keyframes reveal-in { from { opacity: 0; transform: translate3d(0, 22px, 0); } }
 
 // ---------- Quantity stepper ----------
 .qty {
   display: inline-flex;
   align-items: center;
-  background: $cream-2;
-  border-radius: 999px;
-  padding: 4px;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: 3px;
   button {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #fff;
-    transition: transform 0.2s $ease-back;
+    width: 42px;
+    height: 42px;
+    border-radius: 2px;
+    transition: transform 0.25s $ease-back, background-color 0.2s;
     @include focus-ring;
-    &:active { transform: scale(0.85); }
+    &:active { transform: scale(0.85); background: $cream-2; }
   }
-  output { min-width: 40px; text-align: center; font-family: $font-display; font-size: 1.4rem; }
+  output { min-width: 36px; text-align: center; font-family: $font-display; font-weight: 600; font-size: 1.4rem; }
   &--sm {
-    button { width: 36px; height: 36px; .ic { width: 15px; height: 15px; } }
-    output { min-width: 32px; font-size: 1.1rem; }
+    button { width: 34px; height: 34px; .ic { width: 14px; height: 14px; } }
+    output { min-width: 28px; font-size: 1.15rem; }
   }
 }
 
@@ -261,9 +265,9 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
 .progress {
   position: fixed;
   inset: 0 0 auto 0;
-  height: 3px;
+  height: 2px;
   z-index: 120;
-  background: linear-gradient(90deg, $red, $gold);
+  background: $gold;
   transform: scaleX(0);
   transform-origin: left;
   pointer-events: none;
@@ -283,20 +287,20 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
 .toast {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  border-radius: 999px;
+  gap: 12px;
+  padding: 13px 20px;
+  border-radius: $radius-sm;
   background: $ink;
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.86rem;
+  color: $paper;
+  font-weight: 600;
+  font-size: 0.84rem;
   box-shadow: $shadow;
-  animation: toast-in 0.45s $ease-back both;
+  animation: toast-in 0.55s $ease-out both;
   .ic { color: $gold; }
-  &.out { animation: toast-out 0.3s ease-in both; }
+  &.out { animation: toast-out 0.35s ease-in both; }
 }
-@keyframes toast-in { from { opacity: 0; transform: translate3d(0, -16px, 0) scale(0.9); } }
-@keyframes toast-out { to { opacity: 0; transform: translate3d(0, -10px, 0) scale(0.95); } }
+@keyframes toast-in { from { opacity: 0; transform: translate3d(0, -14px, 0); } }
+@keyframes toast-out { to { opacity: 0; transform: translate3d(0, -8px, 0); } }
 
 .overlay {
   position: fixed;
@@ -304,11 +308,11 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
   z-index: 980;
   display: grid;
   place-items: center;
-  background: rgba($ink, 0.94);
+  background: rgba($ink, 0.95);
   color: #fff;
   text-align: center;
   animation: fade 0.3s both;
-  &__box { padding: 30px; display: grid; justify-items: center; h3 { @include display(1.9rem); margin: 18px 0 8px; } p { color: rgba(255, 255, 255, 0.7); } }
+  &__box { padding: 30px; display: grid; justify-items: center; h3 { @include display(2rem); font-style: italic; margin: 22px 0 8px; } p { color: rgba(255, 255, 255, 0.65); font-size: 0.9rem; } }
 }
 @keyframes fade { from { opacity: 0; } }
 
@@ -323,10 +327,10 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
   gap: 12px;
   p { color: $muted; }
   &__art {
-    width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center;
-    background: $cream-2; color: $red; .ic { width: 36px; height: 36px; }
+    width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid $gold; color: $gold-deep; .ic { width: 28px; height: 28px; stroke-width: 1.5; }
   }
-  &--cart { padding: 40px 0; h3 { font-size: 1.2rem; } }
+  &--cart { padding: 40px 0; h3 { @include display(1.7rem); } }
 }
 .demo-note {
   display: flex;
@@ -335,12 +339,12 @@ main.view-in > * { animation: view-rise 0.6s $ease-out backwards; }
   margin-top: 16px;
   padding: 12px 14px;
   border-radius: $radius-sm;
-  background: rgba($wa, 0.1);
-  color: #0c5f33;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: rgba($wa, 0.08);
+  color: #1d5a3b;
+  font-size: 0.78rem;
+  font-weight: 500;
   .ic { margin-top: 2px; }
-  &--dark { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.65); }
+  &--dark { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.6); }
 }
 
 @media (prefers-reduced-motion: reduce) {

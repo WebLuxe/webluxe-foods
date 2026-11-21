@@ -1,36 +1,37 @@
-// Design tokens — WebLuxe Foods: warm ink, cream, chilli red and saffron gold.
-$red: #e4002b;
-$red-dark: #b80022;
-$gold: #ffb81c;
-$gold-deep: #c98200;
-$blue: #1b2a8f;
-$green: #00a04a;
-$wa: #128c4a;
+// Design tokens — WebLuxe Foods: a chic European brasserie. Ivory paper, warm ink, bordeaux and brushed brass.
+// (Variable names are kept from the first build so every partial picks up the new palette.)
+$red: #7b2431;        // bordeaux: primary action
+$red-dark: #5e1a25;
+$gold: #c2a06b;       // brushed brass: accents on dark
+$gold-deep: #9a7a46;  // brass on light
+$blue: #1f2b3a;
+$green: #3e6b4f;
+$wa: #23704a;
 
-$ink: #14100d;
-$ink-2: #221b16;
-$ink-3: #3a2f25;
-$cream: #fbf5e9;
-$cream-2: #f3e9d6;
-$paper: #ffffff;
-$muted: #776b5e;
-$line: rgba(20, 16, 13, 0.1);
+$ink: #171411;
+$ink-2: #221e1a;
+$ink-3: #4a423a;
+$cream: #f4efe6;
+$cream-2: #e9e2d5;
+$paper: #fbf8f2;
+$muted: #857a6d;
+$line: rgba(23, 20, 17, 0.12);
 
-$font-display: 'Anton', 'Impact', 'Haettenschweiler', sans-serif;
-$font-body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-$font-script: 'Caveat Brush', 'Segoe Script', cursive;
+$font-display: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+$font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+$font-script: 'Cormorant Garamond', Georgia, serif;
 $font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
 
 $ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 $ease-io: cubic-bezier(0.76, 0, 0.24, 1);
-$ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+$ease-back: cubic-bezier(0.34, 1.4, 0.64, 1);
 
-$header-h: 68px;
+$header-h: 64px;
 $tabbar-h: 62px;
-$radius: 22px;
-$radius-sm: 14px;
-$shadow: 0 18px 44px -20px rgba(20, 16, 13, 0.4);
-$shadow-sm: 0 6px 18px -10px rgba(20, 16, 13, 0.3);
+$radius: 4px;
+$radius-sm: 3px;
+$shadow: 0 24px 50px -28px rgba(23, 20, 17, 0.45);
+$shadow-sm: 0 10px 26px -20px rgba(23, 20, 17, 0.4);
 
 $bp-sm: 560px;
 $bp-md: 820px;
@@ -53,15 +54,23 @@ $bp-lg: 1100px;
 }
 @mixin display($size) {
   font-family: $font-display;
-  font-weight: 400;
+  font-weight: 500;
   font-size: $size;
-  line-height: 0.95;
-  letter-spacing: 0.005em;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+// Small tracked capitals: the brasserie "label" voice
+@mixin label {
+  font-family: $font-body;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
 }
-@mixin focus-ring($color: $blue) {
+@mixin focus-ring($color: $gold-deep) {
   &:focus-visible {
-    outline: 3px solid $color;
+    outline: 2px solid $color;
     outline-offset: 3px;
   }
 }

@@ -4,7 +4,7 @@ window.FX = (() => {
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SMALL = matchMedia('(max-width: 820px)').matches;
   const LOW = SMALL || (navigator.hardwareConcurrency || 8) <= 4;
-  const PAL = ['#ffb81c', '#ff8a00', '#e4002b', '#fff3d6'];
+  const PAL = ['#c2a06b', '#e6d3ad', '#7b2431', '#fbf8f2'];
 
   function fit(canvas, maxDpr = 2) {
     const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);

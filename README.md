@@ -1,6 +1,6 @@
-# WebLuxe Foods — Mauritian Street Kitchen
+# WebLuxe Foods — Kitchen & Takeaway
 
-A concept site by WebLuxe: a takeaway-only ordering site for a Mauritian restaurant, built around
+A concept site by WebLuxe: a takeaway-only ordering site for a chic, European-styled snack kitchen in Grand Baie, built around
 **Q-Skip** — order ahead on your phone, skip the queue and collect at the counter.
 
 It is a static site (HTML, SCSS, vanilla JS, canvas), so it runs on GitHub Pages with no backend.
@@ -14,12 +14,12 @@ Orders are sent to the restaurant as a ready-written **WhatsApp message**.
   Tap to skip.
 - **Tab transitions**: the ink burns in from where you tapped (a few ingredients fly off your finger), the
   page name slams in, and the ink burns away onto the new page. Without WebGL it falls back to a circular wipe.
-- **Home**: hero slider with a canvas ember effect and parallax, dish ticker, bestseller rail,
-  menu category tiles, "how Q-Skip works" and a story block with animated counters.
-- **Menu**: seven menus (Starters, Street Classics, Noodles & Rice, Curries & Mains, Burgers & Sides,
-  Desserts, Drinks), a sticky category bar with a sliding indicator, and search.
+- **Home** (kept short on purpose): hero slider with a canvas ember effect and parallax, one statement line,
+  four signature dishes, and a three-step "order ahead" band.
+- **Menu**: five sections (Starters, Burgers, Noodles & Rice from the wok, Desserts, Drinks) laid out as
+  refined text-led rows with a small photo, a sticky category bar with a sliding underline, and search.
 - **Item options**: every dish opens a sheet before it is added — required and optional choices
-  (protein, spice level, sauces with a limit, extras, "remove" items, make-it-a-meal, sizes),
+  (protein, heat, sauces with a limit, extras, "leave out" items, make-it-a-menu, portions, flavours),
   quantity, special instructions and a live rolling price. On phones the sheet can be dragged down to close.
 - **Cart and checkout** (takeaway only): edit quantities or re-open a line's options, name and mobile
   number, ASAP or a pickup slot, payment method at the counter, totals with 15% VAT.
@@ -28,7 +28,7 @@ Orders are sent to the restaurant as a ready-written **WhatsApp message**.
 - **Q-Skip ticket**: order number, pickup code, status tracker and confetti.
 - **Receipt** with a QR code: print / save as PDF, or save as an image.
 - **My Orders**: order history on the device, with "order again".
-- Small touches: cards tilt toward the cursor on desktop, haptic ticks on Android, add-to-cart fly
+- Small touches: haptic ticks on Android, add-to-cart fly
   animation, scroll progress bar. Respects `prefers-reduced-motion`.
 
 ## What is and isn't real
@@ -71,4 +71,4 @@ npm run watch    # recompile on save
 - Photos from [Unsplash](https://unsplash.com) (Unsplash License). Some dishes use the closest
   available stock photo rather than a photo of the exact dish; replace them with your own.
 - QR codes by [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (MIT).
-- Fonts: Anton, Plus Jakarta Sans, Caveat Brush and JetBrains Mono via Google Fonts.
+- Fonts: Cormorant Garamond, Manrope and JetBrains Mono via Google Fonts.

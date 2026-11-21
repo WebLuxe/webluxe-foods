@@ -19,7 +19,7 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: radial-gradient(110% 70% at 50% 75%, #2b190e 0%, $ink 62%);
+  background: radial-gradient(110% 70% at 50% 75%, #2a1d14 0%, $ink 62%);
   pointer-events: none;
   &.is-gone { display: none; }
   &.is-cover { display: block; animation: veil-in 0.52s $ease-io both; }
@@ -48,9 +48,9 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.28em;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.7);
     i { width: 26px; height: 1.5px; background: $gold; transform: scaleX(0); transition: transform 0.8s $ease-out 0.5s; }
@@ -59,11 +59,13 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     span:last-child { transition-delay: 0.45s; }
   }
   &__word {
-    @include display(min(25vw, 220px));
-    line-height: 0.84;
+    @include display(min(17.5vw, 176px));
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: 0.03em;
     display: grid;
     justify-items: center;
-    b { display: inline-block; font-weight: 400; }
+    b { display: inline-block; font-weight: inherit; }
   }
   // Each letter sits in a clipped row and punches up into place
   &__w1, &__w2 { display: flex; overflow: hidden; padding: 0.04em 0.02em 0; }
@@ -74,9 +76,11 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
   }
   &__w2 {
     color: $gold;
-    font-size: 0.56em;
-    letter-spacing: 0.32em;
-    margin-right: -0.32em;
+    font-family: $font-body;
+    font-weight: 600;
+    font-size: 0.2em;
+    letter-spacing: 0.9em;
+    margin: 0.5em -0.9em 0 0;
     b { opacity: 0; transform: translate3d(0, 0, 0) scale(1.6); filter: blur(6px); transition: opacity 0.5s, transform 0.9s $ease-out, filter 0.6s; transition-delay: calc(var(--n) * 60ms + 0.55s); }
   }
   &__load {
@@ -88,7 +92,8 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     align-items: baseline;
     gap: 14px;
     font-family: $font-script;
-    font-size: 1.35rem;
+    font-style: italic;
+    font-size: 1.25rem;
     color: $gold;
     white-space: nowrap;
     opacity: 0;
@@ -100,9 +105,9 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     position: absolute;
     top: calc(22px + env(safe-area-inset-top));
     right: 20px;
-    font-size: 0.66rem;
-    font-weight: 800;
-    letter-spacing: 0.2em;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.4);
     opacity: 0;
@@ -141,17 +146,21 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
   pointer-events: none;
   visibility: hidden;
   &__sub {
-    font-family: $font-script;
+    font-family: $font-body;
     font-style: normal;
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
     color: $gold;
-    transform: rotate(-4deg);
+    margin-bottom: 10px;
     opacity: 0;
   }
   &__name {
-    @include display(clamp(3.4rem, 15vw, 9rem));
-    font-weight: 400;
-    line-height: 0.9;
+    @include display(clamp(3.4rem, 15vw, 8.5rem));
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1;
     > span { display: inline-block; overflow: hidden; padding-top: 0.06em; vertical-align: top; }
     > span > span { display: inline-block; transform: translate3d(0, 110%, 0); }
   }
@@ -167,7 +176,7 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
 }
 @keyframes pt-up { from { transform: translate3d(0, 110%, 0) rotate(6deg); } to { transform: none; } }
 @keyframes pt-away { to { transform: translate3d(0, -112%, 0) rotate(-4deg); } }
-@keyframes pt-sub { from { opacity: 0; transform: translate3d(0, 14px, 0) rotate(-4deg); } to { opacity: 1; transform: rotate(-4deg); } }
+@keyframes pt-sub { from { opacity: 0; transform: translate3d(0, 12px, 0); } to { opacity: 1; transform: none; } }
 @keyframes pt-fade { to { opacity: 0; } }
 
 // "Sending to the kitchen" spinner: the flame mark inside a turning saffron ring
@@ -183,9 +192,9 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 0 30%, $red 60%, $gold 100%);
-    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
-    mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+    background: conic-gradient(from 0deg, transparent 0 40%, rgba($gold, 0.5) 70%, $gold 100%);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
     animation: spin 0.9s linear infinite;
   }
   img { width: 50px; height: 50px; animation: flicker 1.2s ease-in-out infinite alternate; }
@@ -234,17 +243,17 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
   @include up($bp-md) { display: flex; }
   a {
     position: relative;
-    padding: 10px 14px;
+    padding: 10px 16px;
     font-weight: 700;
-    font-size: 0.92rem;
-    border-radius: 999px;
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     @include focus-ring($gold);
     &::after {
       content: '';
       position: absolute;
-      left: 14px; right: 14px; bottom: 4px;
-      height: 3px;
-      border-radius: 3px;
+      left: 16px; right: 16px; bottom: 4px;
+      height: 1px;
       background: $gold;
       transform: scaleX(0);
       transform-origin: right;
@@ -262,7 +271,7 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
   color: #fff;
   transition: transform 0.3s $ease-back;
   @include focus-ring($gold);
@@ -278,8 +287,8 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     border-radius: 999px;
     background: $gold;
     color: $ink;
-    font-size: 0.72rem;
-    font-weight: 800;
+    font-size: 0.68rem;
+    font-weight: 700;
     font-style: normal;
     &.is-empty { display: none; }
     &.bump { animation: bump 0.45s $ease-back; }
@@ -307,22 +316,23 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
     place-content: center;
     justify-items: center;
     gap: 3px;
-    font-size: 0.64rem;
+    font-size: 0.56rem;
     font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: inherit;
     .ic { width: 22px; height: 22px; transition: transform 0.35s $ease-back; }
     &::before {
       content: '';
       position: absolute;
       top: 0; left: 50%;
-      width: 28px; height: 3px;
+      width: 28px; height: 1px;
       margin-left: -14px;
-      border-radius: 0 0 4px 4px;
       background: $gold;
       transform: scaleX(0);
       transition: transform 0.35s $ease-out;
     }
-    &.is-on { color: #fff; .ic { transform: translateY(-2px) scale(1.12); color: $gold; } &::before { transform: scaleX(1); } }
+    &.is-on { color: #fff; .ic { transform: translateY(-2px); color: $gold; } &::before { transform: scaleX(1); } }
     &:active .ic { transform: scale(0.85); }
   }
   .cart-btn__count { top: 6px; right: calc(50% - 24px); }
@@ -337,19 +347,19 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 7px 7px 7px 20px;
-  border-radius: 999px;
+  padding: 6px 6px 6px 20px;
+  border-radius: $radius-sm;
   background: $ink;
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.9rem;
+  color: $paper;
+  font-weight: 600;
+  font-size: 0.84rem;
   box-shadow: $shadow;
   transform: translate3d(-50%, 150%, 0);
-  transition: transform 0.5s $ease-back;
+  transition: transform 0.6s $ease-out;
   white-space: nowrap;
   @include up($bp-md) { bottom: 26px; }
   &.show { transform: translate3d(-50%, 0, 0); }
-  &__go { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: $red; font-size: 0.84rem; }
+  &__go { display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 2px; background: $red; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; .ic { width: 14px; height: 14px; } }
 }
 // The pill would cover the checkout or the ticket, so tuck it away there.
 body[data-view='order'] .cart-pill, body:has(dialog[open]) .cart-pill { transform: translate3d(-50%, 150%, 0); }
@@ -365,7 +375,7 @@ body[data-view='order'] .cart-pill, body:has(dialog[open]) .cart-pill { transfor
 .page-head {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(90% 140% at 85% 0%, #3a2414 0%, $ink 62%);
+  background: radial-gradient(90% 140% at 85% 0%, #2e2219 0%, $ink 62%);
   color: #fff;
   padding: calc(#{$header-h} + env(safe-area-inset-top) + 40px) 0 46px;
   .wrap { position: relative; z-index: 1; }
@@ -377,8 +387,9 @@ body[data-view='order'] .cart-pill, body:has(dialog[open]) .cart-pill { transfor
     right: -0.04em;
     bottom: -0.2em;
     @include display(clamp(7rem, 26vw, 19rem));
+    font-style: italic;
     color: transparent;
-    -webkit-text-stroke: 1.5px rgba($gold, 0.2);
+    -webkit-text-stroke: 1px rgba($gold, 0.22);
     pointer-events: none;
     user-select: none;
   }
@@ -392,14 +403,16 @@ body[data-view='order'] .cart-pill, body:has(dialog[open]) .cart-pill { transfor
   color: rgba(255, 255, 255, 0.72);
   margin-top: 80px;
   font-size: 0.92rem;
-  border-top: 4px solid $gold;
+  border-top: 1px solid rgba($gold, 0.5);
+  // home ends on the dark "order ahead" band, so the footer joins it instead of leaving a cream gap
+  body[data-view='home'] & { margin-top: 0; border-top-color: rgba($gold, 0.2); }
   &__grid {
     display: grid;
     gap: 34px;
     padding: 50px 0 36px;
     @include up($bp-sm) { grid-template-columns: 1fr 1fr; }
     @include up($bp-lg) { grid-template-columns: 1.4fr 0.8fr 1fr 1.2fr; }
-    h4 { color: #fff; font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; }
+    h4 { color: $gold; font-size: 0.62rem; letter-spacing: 0.26em; text-transform: uppercase; margin-bottom: 14px; }
     a:not(.btn):not(.logo), p { display: block; margin-bottom: 8px; }
     a:not(.btn) { @include hover { color: $gold; } }
     .logo { color: #fff; }

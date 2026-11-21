@@ -31,7 +31,7 @@
     received: ['Order received', 'The kitchen has your ticket.'],
     preparing: ['On the fire', 'Your food is being cooked right now.'],
     ready: ['Ready to collect!', 'Walk past the queue and show this screen at the Q-Skip counter.'],
-    collected: ['Collected', 'Bon apeti! Mersi, nou trouv twa talere.'],
+    collected: ['Collected', 'Bon appétit! Thank you, see you soon.'],
   };
   const PAY = { cash: 'Cash at the counter', card: 'Card at the counter', juice: 'Juice / mobile money' };
 
@@ -209,22 +209,21 @@
   }
 
   /* ------------------------------------------------------------ item cards */
-  const TAGS = { best: ['Bestseller', 'star'], veg: ['Veg', 'leaf'], spicy: ['Spicy', 'flame'], new: ['New', 'plus'] };
+  const TAGS = { best: ['Signature', 'star'], veg: ['Vegetarian', 'leaf'], spicy: ['Spicy', 'flame'], new: ['New', 'plus'] };
   const tagHtml = (t) => (TAGS[t] ? `<span class="tag tag--${t}">${ic(TAGS[t][1])}${TAGS[t][0]}</span>` : '');
+  const flagText = (i) => (i.tags || []).map((t) => TAGS[t]?.[0]).filter(Boolean).join(' · ');
+  /* A menu row: small square photo, name and price on one line, a short description underneath. */
   function card(i, n = 0) {
+    const flag = flagText(i);
     return `
     <article class="card reveal" style="--i:${n % 6}" data-action="open-item" data-id="${i.id}" tabindex="0" role="button" aria-label="${esc(i.name)}, ${rs(i.price)}. Choose options">
-      <div class="card__media">
-        ${pic(i.img, i.name, '(max-width: 560px) 130px, (max-width: 1100px) 46vw, 380px')}
-        <div class="card__tags">${(i.tags || []).map(tagHtml).join('')}</div>
-      </div>
+      <div class="card__media">${pic(i.img, i.name, '110px')}</div>
       <div class="card__body">
+        ${flag ? `<span class="card__flag">${flag}</span>` : ''}
         <h3 class="card__name">${esc(i.name)}</h3>
+        <span class="price">${rs(i.price)}</span>
         <p class="card__desc">${esc(i.desc)}</p>
-        <div class="card__foot">
-          <span class="price"><small>from</small> ${rs(i.price)}</span>
-          <span class="card__add">${ic('plus')}<span>Add</span></span>
-        </div>
+        <span class="card__add">${ic('plus')}<span>Choose &amp; add</span></span>
       </div>
     </article>`;
   }
@@ -240,7 +239,7 @@
         </nav>
         <div class="site-header__right">
           <span class="status ${st.open ? 'is-open' : 'is-closed'}"><i></i>${st.text}</span>
-          <a class="btn btn--red btn--sm hide-sm" href="#/menu">Order now</a>
+          <a class="btn btn--gold btn--sm hide-sm" href="#/menu">Order now</a>
           <button class="cart-btn" data-action="open-cart" aria-label="Open your order">
             ${ic('bag')}<span class="cart-btn__count is-empty" data-cart-count>0</span>
           </button>
@@ -255,7 +254,7 @@
       <div class="wrap site-footer__grid">
         <div>
           <div class="logo logo--lg">${LOGO}</div>
-          <p class="site-footer__tag">${esc(B.tagline)}. Cooked fresh, collected fast.</p>
+          <p class="site-footer__tag">${esc(B.tagline)}. Cooked to order, collected without the queue.</p>
           <a class="btn btn--wa btn--sm" href="https://wa.me/${B.whatsapp}" target="_blank" rel="noopener">${ic('chat')} Chat on WhatsApp</a>
         </div>
         <div>
@@ -290,14 +289,15 @@
   /* -------------------------------------------------------------------- HOME */
   const HERO = [
     // `pos` keeps the food in the top half of a tall phone screen, above the headline
-    { img: 'hero-kari', pos: '50% 0%', kicker: 'Lakwizinn morisien · Grand Baie', lines: ['Real Kari.', 'Zero Queue.'] },
-    { img: 'hero-mine', pos: '20% 100%', kicker: 'Tossed over a roaring flame', lines: ['Mine', 'Frite.'] },
-    { img: 'hero-spice', pos: '50% 20%', kicker: 'Order ahead with Q-Skip', lines: ['Skip the', 'Line.'] },
+    { img: 'hero-burger', pos: '50% 38%', kicker: 'The burger bar · Grand Baie', lines: ['Pressed,', '<em>perfected.</em>'] },
+    { img: 'hero-crispy', pos: '55% 30%', kicker: 'Golden & crisp', lines: ['Made to', '<em>be shared.</em>'] },
+    { img: 'hero-mine', pos: '78% 70%', kicker: 'From the wok', lines: ['Tossed over', '<em>the flame.</em>'] },
   ];
   const titleHtml = (lines) => lines.map((l, n) => `<span class="line"><span style="--d:${n}">${l}</span></span>`).join('');
+  const catName = (id) => CATS.find((c) => c.id === id)?.en || '';
 
   function viewHome() {
-    const best = ITEMS.filter((i) => (i.tags || []).includes('best'));
+    const sigs = ['burger-classic', 'poulet-croustillant', 'mine-frite', 'fondant'].map(byId).filter(Boolean);
     return `
     <section class="hero" id="hero">
       <div class="hero__slides" id="heroSlides">
@@ -307,99 +307,53 @@
       <div class="hero__inner wrap">
         <p class="kicker" id="heroKicker">${HERO[0].kicker}</p>
         <h1 class="hero__title" id="heroTitle">${titleHtml(HERO[0].lines)}</h1>
-        <p class="hero__sub">Order on your phone, walk straight past the line and collect your takeaway hot from the Q-Skip counter.</p>
+        <p class="hero__sub">Crisp starters, smashed burgers, wok noodles and proper desserts. Order ahead and collect without the queue.</p>
         <div class="hero__cta">
-          <a class="btn btn--red btn--lg" href="#/menu">Order now ${ic('arrow')}</a>
-          <a class="btn btn--ghost btn--lg" href="#qskip" data-action="scroll-to" data-target="#qskip">How Q-Skip works</a>
+          <a class="btn btn--gold btn--lg" href="#/menu">View the menu ${ic('arrow')}</a>
+          <a class="btn btn--ghost btn--lg" href="#ahead" data-action="scroll-to" data-target="#ahead">How it works</a>
         </div>
       </div>
       <div class="hero__dots" id="heroDots">${HERO.map((_, n) => `<button class="${n === 0 ? 'is-on' : ''}" data-action="hero-go" data-n="${n}" aria-label="Slide ${n + 1}"><i></i></button>`).join('')}</div>
-      <div class="hero__badge" aria-hidden="true">
-        <svg viewBox="0 0 120 120"><defs><path id="ring" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs>
-          <text><textPath href="#ring">ORDER AHEAD · SKIP THE QUEUE · Q-SKIP · </textPath></text></svg>
-        <img src="img/mark.svg" alt="" width="44" height="44">
+    </section>
+
+    <section class="sec">
+      <div class="wrap statement">
+        <p class="script reveal">Kitchen &amp; takeaway</p>
+        <p class="reveal" style="--i:1">A small kitchen with a short menu, <em>cooked to order</em> and ready when you walk in.</p>
       </div>
     </section>
 
-    <div class="ticker" aria-hidden="true"><div class="ticker__track">
-      ${Array(2).fill(['Dholl Puri', 'Mine Frite', 'Boulettes', 'Briani', 'Gato Pima', 'Alouda', 'Rougaille', 'Napolitaine', 'Bol Renversé', 'Farata']
-        .map((w) => `<span>${w}</span><b></b>`).join('')).join('')}
-    </div></div>
-
-    <section class="sec sec--crave">
-      <div class="wrap sec__head">
-        <div><p class="script reveal">Ou fin?</p><h2 class="display reveal">Got a craving?</h2></div>
-        <a class="link-arrow reveal" href="#/menu">See the full menu ${ic('arrow')}</a>
-      </div>
-      <div class="rail" id="rail">
-        ${best.map((i, n) => `
-        <article class="rail-card reveal" style="--i:${n}" data-action="open-item" data-id="${i.id}" tabindex="0" role="button" aria-label="${esc(i.name)}, ${rs(i.price)}">
-          <div class="rail-card__img">${pic(i.img, i.name, '290px')}</div>
-          <div class="rail-card__body">
-            <h3>${esc(i.name)}</h3>
-            <div class="rail-card__foot"><span class="price">${rs(i.price)}</span><span class="btn btn--red btn--sm">Order</span></div>
-          </div>
-        </article>`).join('')}
-      </div>
-    </section>
-
-    <section class="sec sec--cats">
+    <section class="sec">
       <div class="wrap">
-        <div class="sec__head"><div><p class="script reveal">Nou meni</p><h2 class="display reveal">Discover our menu</h2></div></div>
-        <div class="cats">
-          ${CATS.map((c, n) => `
-          <a class="cat reveal" style="--i:${n}" href="#/menu/${c.id}">
-            ${pic(c.img, '', n === 0 ? '(max-width: 820px) 92vw, 600px' : '(max-width: 820px) 46vw, 300px')}
-            <span class="cat__no">${pad(n + 1)}</span>
-            <span class="cat__txt"><b>${esc(c.en)}</b><em>${esc(c.name)} · ${ITEMS.filter((i) => i.cat === c.id).length} dishes</em></span>
-          </a>`).join('')}
+        <div class="sec__head">
+          <div><p class="script reveal">Signatures</p><h2 class="display reveal">The house <em>favourites</em></h2></div>
+          <a class="link-arrow reveal" href="#/menu">Full menu ${ic('arrow')}</a>
+        </div>
+        <div class="sigs">
+          ${sigs.map((i, n) => `
+          <article class="sig reveal" style="--i:${n}" data-action="open-item" data-id="${i.id}" tabindex="0" role="button" aria-label="${esc(i.name)}, ${rs(i.price)}">
+            <div class="sig__img">${pic(i.img, i.name, '(max-width: 820px) 46vw, 280px')}</div>
+            <div class="sig__body"><span class="sig__cat">${esc(catName(i.cat))}</span><h3>${esc(i.name)}</h3><span class="price">${rs(i.price)}</span></div>
+          </article>`).join('')}
         </div>
       </div>
     </section>
 
-    <section class="sec sec--qskip" id="qskip">
-      <div class="wrap qskip">
-        <div class="qskip__copy">
-          <p class="script reveal">Pa bizin fer lake</p>
-          <h2 class="display reveal">No queue.<br>Just <span class="hl">Q-Skip</span></h2>
-          <ol class="steps">
-            <li class="reveal" style="--i:0"><span>1</span><div><b>Build your order</b><p>Pick your dishes and tune every one: spice level, sauces, extras, the lot.</p></div></li>
-            <li class="reveal" style="--i:1"><span>2</span><div><b>Send it in one tap</b><p>Your order lands on our kitchen WhatsApp, and you get a ticket with a pickup code.</p></div></li>
-            <li class="reveal" style="--i:2"><span>3</span><div><b>Skip the queue</b><p>Walk straight to the Q-Skip counter, show your code and collect.</p></div></li>
-          </ol>
-          <a class="btn btn--gold btn--lg reveal" href="#/menu">Start my order ${ic('arrow')}</a>
+    <section class="ahead" id="ahead">
+      <div class="wrap ahead__grid">
+        <div>
+          <p class="script reveal">Q-Skip</p>
+          <h2 class="display reveal">Order ahead,<br><em>skip the queue.</em></h2>
+          <a class="btn btn--gold btn--lg ahead__cta reveal" href="#/menu">Start an order ${ic('arrow')}</a>
         </div>
-        <div class="qskip__ticket reveal" aria-hidden="true">
-          <div class="mock">
-            <div class="mock__top"><span>Q-SKIP</span><span>Takeaway</span></div>
-            <div class="mock__no">Q-027</div>
-            <div class="mock__bar"><i></i></div>
-            <div class="mock__rows"><span>Mine Frite · Spesial</span><span>Gato Pima x6</span><span>Alouda · Vanilla</span></div>
-            <div class="mock__code"><small>Pickup code</small><b>4 8 2 1</b></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="sec sec--story">
-      <div class="wrap story">
-        <div class="story__img reveal">${pic('kiosk', 'A colourful Mauritian street food kiosk', '(max-width: 1100px) 92vw, 580px', { wide: true })}</div>
-        <div class="story__copy">
-          <p class="script reveal">Nou zistwar</p>
-          <h2 class="display reveal">More than good food</h2>
-          <p class="reveal">WebLuxe Foods cooks what Mauritians queue for at the tabagie and the bazaar: dholl puri rolled by hand, noodles tossed over a roaring flame, curries that take all morning. The only thing we took out is the queue.</p>
-          <div class="stats">
-            <div class="reveal" style="--i:0"><b data-count="${ITEMS.length}">0</b><span>dishes on the menu</span></div>
-            <div class="reveal" style="--i:1"><b data-count="${CATS.length}">0</b><span>menus to explore</span></div>
-            <div class="reveal" style="--i:2"><b data-count="15">0</b><span>minutes, typical pickup</span></div>
-            <div class="reveal" style="--i:3"><b data-count="0">0</b><span>minutes in the queue</span></div>
-          </div>
-          <a class="link-arrow reveal" href="#/about">Find us in Grand Baie ${ic('arrow')}</a>
-        </div>
+        <ol class="steps">
+          <li class="reveal" style="--i:0"><span>i.</span><div><b>Choose your dishes</b><p>Tune each one: heat, sauces, extras.</p></div></li>
+          <li class="reveal" style="--i:1"><span>ii.</span><div><b>Send in one tap</b><p>Your order reaches our kitchen on WhatsApp, with a pickup code for you.</p></div></li>
+          <li class="reveal" style="--i:2"><span>iii.</span><div><b>Collect, no queue</b><p>Walk to the Q-Skip counter and show your code.</p></div></li>
+        </ol>
       </div>
     </section>`;
   }
-
   function mountHome() {
     const fx = window.FX.embers($('#heroFx'));
     S.cleanup.push(() => fx.stop());
@@ -431,12 +385,12 @@
     return `
     <section class="page-head">
       <div class="wrap">
-        <p class="script">Nou meni</p>
-        <h1 class="display">The Menu</h1>
-        <p class="page-head__sub">Tap any dish to choose your options before it goes in your order.</p>
+        <p class="script">La carte</p>
+        <h1 class="display">The <em>Menu</em></h1>
+        <p class="page-head__sub">Tap a dish to choose your options before it goes in your order.</p>
         <label class="search">
           ${ic('search')}
-          <input id="q" type="search" placeholder="Search mine frite, dholl puri…" value="${esc(S.query)}" autocomplete="off" enterkeyhint="search" aria-label="Search the menu">
+          <input id="q" type="search" placeholder="Search burgers, wok, desserts…" value="${esc(S.query)}" autocomplete="off" enterkeyhint="search" aria-label="Search the menu">
         </label>
       </div>
       <span class="page-head__ghost" aria-hidden="true">Menu</span>
@@ -456,9 +410,8 @@
     return `
     <section class="menu-sec" id="sec-${c.id}">
       <header class="menu-sec__head">
-        <span class="menu-sec__no">${pad(n + 1)}</span>
-        <div><h2 class="display">${esc(c.en)} <em>${esc(c.name)}</em></h2><p>${esc(c.sub)}</p></div>
-        <span class="menu-sec__count">${list.length} dishes</span>
+        <span class="menu-sec__no">${pad(n + 1)} · ${esc(c.name)}</span>
+        <h2 class="display">${esc(c.en)}</h2><p>${esc(c.sub)}</p>
       </header>
       <div class="grid">${list.map(card).join('')}</div>
     </section>`;
@@ -473,7 +426,7 @@
       const hits = ITEMS.filter((i) => `${i.name} ${i.desc} ${CATS.find((c) => c.id === i.cat).en}`.toLowerCase().includes(q));
       html = hits.length
         ? `<section class="menu-sec"><header class="menu-sec__head"><div><h2 class="display">Results</h2><p>${hits.length} dish${hits.length === 1 ? '' : 'es'} for “${esc(S.query)}”</p></div></header><div class="grid">${hits.map(card).join('')}</div></section>`
-        : `<div class="empty"><h3 class="display">Nothing for “${esc(S.query)}”</h3><p>Try “mine”, “kari” or “gato”.</p><button class="btn btn--dark" data-action="clear-search">Clear search</button></div>`;
+        : `<div class="empty"><h3 class="display">Nothing for “${esc(S.query)}”</h3><p>Try “burger”, “wok” or “crêpe”.</p><button class="btn btn--dark" data-action="clear-search">Clear search</button></div>`;
     } else if (S.menuCat === 'all') {
       html = CATS.map(menuSection).join('');
     } else {
@@ -718,7 +671,7 @@
           ${empty ? `
           <div class="empty empty--cart">
             <div class="empty__art">${ic('bag')}</div>
-            <h3>Your bag is empty</h3><p>Add a mine frite. You know you want to.</p>
+            <h3>Your order is empty</h3><p>Start with a burger. You know you want to.</p>
             <a class="btn btn--red" href="#/menu" data-action="close-cart">Browse the menu</a>
           </div>` : `
           <ul class="lines">${S.cart.map(cartLineHtml).join('')}</ul>
@@ -729,7 +682,7 @@
           <h2 class="display">Who's collecting?</h2>
           <p class="muted">We call your order number at the Q-Skip counter.</p>
           <label class="field ${S.errors.name ? 'has-err' : ''}"><span>Your name</span>
-            <input id="fName" maxlength="40" autocomplete="given-name" autocapitalize="words" enterkeyhint="next" value="${esc(S.details.name)}" placeholder="e.g. Darsh">${err('name')}</label>
+            <input id="fName" maxlength="40" autocomplete="given-name" autocapitalize="words" enterkeyhint="next" value="${esc(S.details.name)}" placeholder="e.g. Sarah">${err('name')}</label>
           <label class="field ${S.errors.phone ? 'has-err' : ''}"><span>Mobile number</span>
             <input id="fPhone" type="tel" inputmode="tel" maxlength="16" autocomplete="tel" enterkeyhint="done" value="${esc(S.details.phone)}" placeholder="5xxx xxxx">${err('phone')}</label>
 
@@ -875,7 +828,7 @@
   function viewOrders() {
     return `
     <section class="page-head">
-      <div class="wrap"><p class="script">Mo komann</p><h1 class="display">My Orders</h1>
+      <div class="wrap"><p class="script">Vos commandes</p><h1 class="display">My <em>Orders</em></h1>
         <p class="page-head__sub">Orders placed on this device. Open one for the ticket and receipt.</p></div>
       <span class="page-head__ghost" aria-hidden="true">Orders</span>
     </section>
@@ -960,7 +913,7 @@
       <div class="receipt__rule"></div>
       <div class="receipt__qr">${qrSvg(qrText(o))}</div>
       <p class="receipt__c">Pickup code <b class="receipt__code">${o.code}</b></p>
-      <p class="receipt__c receipt__thanks">Mersi! Nou trouv twa talere.</p>
+      <p class="receipt__c receipt__thanks">Merci! See you soon.</p>
       <p class="receipt__c receipt__demo">Order summary · pay at the counter</p>
     </div>`;
   }
@@ -1011,7 +964,7 @@
     let last = stageOf(o);
     if (S.celebrate === o.id) {
       S.celebrate = null;
-      setTimeout(() => { window.FX.confetti(); toast(`Order ${o.number} placed. Mersi, ${o.customer.name}!`); }, 900);
+      setTimeout(() => { window.FX.confetti(); toast(`Order ${o.number} placed. Merci, ${o.customer.name}!`); }, 900);
     }
     const tick = setInterval(() => {
       const st = stageOf(o);
@@ -1081,11 +1034,10 @@
     const dpr = 2, c = document.createElement('canvas');
     c.width = W * dpr; c.height = H * dpr;
     const x = c.getContext('2d'); x.scale(dpr, dpr);
-    x.fillStyle = '#fffdf7'; x.fillRect(0, 0, W, H);
-    const g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, '#e4002b'); g.addColorStop(1, '#ffb81c');
-    x.fillStyle = g; x.fillRect(0, 0, W, 8);
+    x.fillStyle = '#fbf8f2'; x.fillRect(0, 0, W, H);
+    x.fillStyle = '#c2a06b'; x.fillRect(0, 0, W, 4);
     x.fillStyle = '#14100d'; x.textAlign = 'center';
-    x.font = '34px Anton, Impact, sans-serif'; x.fillText('WEBLUXE FOODS', W / 2, 58);
+    x.font = '600 36px "Cormorant Garamond", Georgia, serif'; x.fillText('WebLuxe Foods', W / 2, 58);
     x.font = mono; x.fillStyle = '#6b6259';
     x.fillText(B.tagline, W / 2, 80); x.fillText(B.address, W / 2, 98); x.fillText(`${B.phone} · ${B.vatNo}`, W / 2, 116);
     let y = headH;
@@ -1112,7 +1064,7 @@
     x.font = mono; x.fillText('Pickup code', W / 2, y);
     x.font = 'bold 26px "JetBrains Mono", ui-monospace, monospace'; x.fillText(o.code.split('').join(' '), W / 2, y + 30);
     x.font = mono; x.fillStyle = '#6b6259';
-    x.fillText('Mersi! Nou trouv twa talere.', W / 2, y + 56);
+    x.fillText('Merci! See you soon.', W / 2, y + 56);
     x.fillText('Order summary · pay at the counter', W / 2, y + 74);
 
     c.toBlob((blob) => {
@@ -1130,29 +1082,22 @@
     const st = openState();
     return `
     <section class="page-head">
-      <div class="wrap"><p class="script">Vinn get nou</p><h1 class="display">Find Us</h1>
-        <p class="page-head__sub">One kitchen, one counter, zero queue. Takeaway only.</p></div>
+      <div class="wrap"><p class="script">Venez nous voir</p><h1 class="display">Find <em>Us</em></h1>
+        <p class="page-head__sub">One kitchen, one counter, no queue. Takeaway only.</p></div>
       <span class="page-head__ghost" aria-hidden="true">Visit</span>
     </section>
     <div class="wrap about">
-      <div class="about__img reveal">${pic('hero-morne', 'Aerial view of the Mauritian coast', '(max-width: 1240px) 92vw, 1240px', { wide: true })}</div>
       <div class="about__cards">
         <div class="info reveal" style="--i:0">${ic('about')}<h3>Where</h3><p>${esc(B.address)}</p>
+          <p><a href="${TEL}">${esc(B.phone)}</a></p>
           <a class="link-arrow" href="${B.maps}" target="_blank" rel="noopener">Open in Maps ${ic('arrow')}</a></div>
         <div class="info reveal" style="--i:1">${ic('clock')}<h3>When</h3>
           <p>Every day, ${hm(B.hours[0])} – ${hm(B.hours[1])}</p>
-          <span class="status status--solid ${st.open ? 'is-open' : 'is-closed'}"><i></i>${st.text}</span></div>
-        <div class="info reveal" style="--i:2">${ic('phone')}<h3>Talk to us</h3>
-          <p><a href="${TEL}">${esc(B.phone)}</a></p>
-          <a class="btn btn--wa btn--sm" href="https://wa.me/${B.whatsapp}" target="_blank" rel="noopener">${ic('chat')} WhatsApp</a></div>
-        <div class="info info--dark reveal" style="--i:3">${ic('bag')}<h3>Q-Skip counter</h3>
-          <p>Ordered online? Don't join the line. The Q-Skip counter is on the right as you walk in. Show your order number and pickup code.</p>
+          <span class="status status--solid ${st.open ? 'is-open' : 'is-closed'}"><i></i>${st.text}</span>
+          <a class="btn btn--wa btn--sm" href="https://wa.me/${B.whatsapp}" target="_blank" rel="noopener">${ic('chat')} WhatsApp us</a></div>
+        <div class="info info--dark reveal" style="--i:2">${ic('bag')}<h3>Q-Skip counter</h3>
+          <p>Ordered online? Skip the line. The Q-Skip counter is on your right as you walk in: show your order number and pickup code.</p>
           <a class="btn btn--gold" href="#/menu">Order now ${ic('arrow')}</a></div>
-      </div>
-      <div class="about__gallery">
-        <figure class="reveal" style="--i:0">${pic('market', 'A fruit seller at a Mauritian market', '(max-width: 820px) 92vw, 330px', { wide: true })}<figcaption>Produce from the bazaar, every morning</figcaption></figure>
-        <figure class="reveal" style="--i:1">${pic('hero-wok', 'A chef tossing food in a flaming wok', '(max-width: 820px) 92vw, 500px', { wide: true })}<figcaption>Cooked to order over a real flame</figcaption></figure>
-        <figure class="reveal" style="--i:2">${pic('hero-lagoon', 'A turquoise lagoon in Mauritius', '(max-width: 820px) 92vw, 410px', { wide: true })}<figcaption>Take it to the beach. We won't tell.</figcaption></figure>
       </div>
     </div>`;
   }
@@ -1195,8 +1140,8 @@
   const stage = () => window.STAGE || VEIL;
 
   const PAGE_LABEL = {
-    home: ['Byenvini', 'WebLuxe Foods'], menu: ['Nou meni', 'The Menu'], orders: ['Ou komand', 'My Orders'],
-    order: ['Ou tiket', 'Your Ticket'], about: ['Vinn get nou', 'Find Us'],
+    home: ['Bienvenue', 'WebLuxe Foods'], menu: ['La carte', 'The Menu'], orders: ['Vos commandes', 'My Orders'],
+    order: ['Votre ticket', 'Your Ticket'], about: ['Venez nous voir', 'Find Us'],
   };
   function showLabel(view) {
     const [sub, name] = PAGE_LABEL[view] || PAGE_LABEL.home;
@@ -1266,7 +1211,7 @@
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
-        const c = ev.target.closest?.('.card, .rail-card, .cat');
+        const c = ev.target.closest?.('.sig');
         if (el && el !== c) { el.style.setProperty('--rx', '0deg'); el.style.setProperty('--ry', '0deg'); }
         el = c;
         if (!c) return;
@@ -1337,7 +1282,7 @@
       if (!o) return;
       o.collectedAt = Date.now(); store.set('orders', S.orders);
       $('#tracker').innerHTML = trackerHtml(o);
-      toast('Bon apeti!', 'star');
+      toast('Bon appétit!', 'star');
     },
     reorder: (el) => reorder(el.dataset.id),
     'print-receipt': () => window.print(),
@@ -1370,19 +1315,18 @@
     saveCart(false);
     navigate(true);
     sheetDrag();
-    tilt();
 
     /* Intro: the wordmark punches in straight away (CSS); the WebGL wok fire joins as soon as three.js has
        loaded. When the photos are in and the toss has peaked, time slows, the camera pushes through the
        ingredients and the screen burns away onto the hero. Tap anywhere to cut it short. */
     const intro = $('#intro'), veil = $('#veil'), pct = $('#introPct'), msg = $('#introMsg');
-    const msgs = ['Pe lalim dife…', 'Pe koup piman…', 'Pe tay mine…', 'Pare!'];
+    const msgs = ['Lighting the wok…', 'Warming the brioche…', 'Plating up…', 'Bon appétit.'];
     let skip = false;
     intro.addEventListener('pointerdown', () => { skip = true; }, { once: true });
     requestAnimationFrame(() => intro.classList.add('is-lit'));
 
     const small = window.FX.SMALL;
-    const assets = [`hero-kari${small ? '-sm' : ''}`, 'mine-frite-sm', 'dholl-puri-sm', 'gato-pima-sm'];
+    const assets = [`hero-burger${small ? '-sm' : ''}`, 'burger-classic-sm', 'poulet-croustillant-sm', 'fondant-sm'];
     const total = assets.length + 2;
     let done = 0, shown = 0;
     const step = () => {
@@ -1391,7 +1335,7 @@
       msg.textContent = msgs[Math.min(msgs.length - 1, Math.floor((done / total) * (msgs.length - 1)))];
     };
     const load = (name) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = res; im.src = `img/${name}.webp`; }).then(step);
-    const fonts = Promise.race([document.fonts?.load?.('100px Anton') || Promise.resolve(), wait(2500)]).then(step);
+    const fonts = Promise.race([document.fonts?.load?.('500 100px "Cormorant Garamond"') || Promise.resolve(), wait(2500)]).then(step);
     const ready = Promise.race([Promise.all([...assets.map(load), fonts]), wait(7000)]);
 
     // three.js is ~170 KB gzipped: wait for it a while, but never hold the site hostage

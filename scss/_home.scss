@@ -8,7 +8,7 @@
   align-items: flex-end;
   overflow: hidden;
   background: $ink;
-  color: #fff;
+  color: $paper;
 
   &__slides { position: absolute; inset: 0; will-change: transform; }
   // Slides cross-fade with opacity and a slow zoom: both run on the compositor, so they stay smooth on phones.
@@ -16,9 +16,9 @@
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 1.1s ease;
-    img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transform: scale(1.14); transform-origin: var(--pos, 50% 50%); }
-    &.is-on { opacity: 1; img { animation: kenburns 8s linear forwards; } }
+    transition: opacity 1.6s ease;
+    img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); transform: scale(1.12); transform-origin: var(--pos, 50% 50%); }
+    &.is-on { opacity: 1; img { animation: kenburns 9s cubic-bezier(0.2, 0, 0.4, 1) forwards; } }
   }
   // Legibility scrim
   &::before {
@@ -27,46 +27,47 @@
     inset: 0;
     z-index: 2;
     background:
-      linear-gradient(90deg, rgba($ink, 0.9) 0%, rgba($ink, 0.55) 48%, rgba($ink, 0.15) 100%),
-      linear-gradient(0deg, rgba($ink, 0.92) 0%, transparent 50%);
+      linear-gradient(90deg, rgba($ink, 0.82) 0%, rgba($ink, 0.4) 50%, rgba($ink, 0.05) 100%),
+      linear-gradient(0deg, rgba($ink, 0.9) 0%, transparent 46%);
     @include down($bp-md) {
-      background: linear-gradient(0deg, rgba($ink, 0.96) 0%, rgba($ink, 0.72) 48%, rgba($ink, 0.3) 100%);
+      background: linear-gradient(0deg, rgba($ink, 0.96) 0%, rgba($ink, 0.7) 40%, rgba($ink, 0.05) 72%);
     }
   }
-  &__fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+  &__fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; opacity: 0.55; }
 
   &__inner {
     position: relative;
     z-index: 5;
-    padding: calc(#{$header-h} + 40px) 0 clamp(84px, 13vh, 130px);
+    padding: calc(#{$header-h} + 40px) 0 clamp(86px, 13vh, 130px);
   }
-  .kicker { color: $gold; margin-bottom: 16px; animation: rise 0.9s $ease-out 0.1s both; }
+  .kicker { color: $gold; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; animation: rise 1s $ease-out 0.1s both;
+    &::before { content: ''; width: 28px; height: 1px; background: currentColor; } }
   &__title {
-    @include display(clamp(3.7rem, 14.5vw, 12rem));
-    line-height: 0.88;
-    margin-left: -0.03em;
-    .line { display: block; overflow: hidden; padding-top: 0.06em; }
+    @include display(clamp(3.4rem, 13.5vw, 9.5rem));
+    line-height: 0.96;
+    margin-left: -0.02em;
+    .line { display: block; overflow: hidden; padding: 0.04em 0 0.08em; }
     .line > span {
       display: block;
-      animation: line-up 0.95s $ease-out both;
-      animation-delay: calc(var(--d) * 110ms + 0.15s);
+      animation: line-up 1.15s $ease-out both;
+      animation-delay: calc(var(--d) * 120ms + 0.15s);
     }
-    .line:last-child > span { color: $gold; }
-    &.swap .line > span { animation: line-out 0.38s $ease-io both; animation-delay: calc(var(--d) * 50ms); }
+    em { font-style: italic; color: $gold; }
+    &.swap .line > span { animation: line-out 0.5s $ease-io both; animation-delay: calc(var(--d) * 60ms); }
   }
   &__sub {
-    max-width: 42ch;
-    margin-top: 20px;
-    font-size: clamp(0.98rem, 1.5vw, 1.2rem);
-    color: rgba(255, 255, 255, 0.84);
-    animation: rise 0.9s $ease-out 0.45s both;
+    max-width: 40ch;
+    margin-top: 18px;
+    font-size: clamp(0.94rem, 1.4vw, 1.1rem);
+    color: rgba($paper, 0.78);
+    animation: rise 1s $ease-out 0.45s both;
   }
   &__cta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 26px;
-    animation: rise 0.9s $ease-out 0.58s both;
+    gap: 10px;
+    margin-top: 28px;
+    animation: rise 1s $ease-out 0.6s both;
     @include down($bp-sm) { .btn { flex: 1 1 100%; } }
   }
 
@@ -74,272 +75,126 @@
     position: absolute;
     z-index: 6;
     left: 50%;
-    bottom: 26px;
+    bottom: 22px;
     transform: translateX(-50%);
     display: flex;
-    gap: 6px;
+    gap: 4px;
     button {
-      width: 44px; height: 30px;
+      width: 40px; height: 30px;
       display: grid; align-items: center;
-      i { display: block; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.3); overflow: hidden; position: relative; }
+      i { display: block; height: 1px; background: rgba(255, 255, 255, 0.3); overflow: hidden; position: relative; }
       i::after { content: ''; position: absolute; inset: 0; background: $gold; transform: scaleX(0); transform-origin: left; }
-      &.is-on i::after { animation: dot-fill 6.5s linear both; }
+      &.is-on i::after { animation: dot-fill 7s linear both; }
     }
-  }
-  // Turning text ring with the flame mark (larger screens)
-  &__badge {
-    display: none;
-    position: absolute;
-    z-index: 6;
-    right: clamp(24px, 6vw, 90px);
-    bottom: clamp(70px, 14vh, 130px);
-    width: 150px;
-    height: 150px;
-    place-items: center;
-    animation: rise 0.9s $ease-out 0.8s both;
-    svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 18s linear infinite; overflow: visible; }
-    text { font-family: $font-body; font-weight: 800; font-size: 10.4px; letter-spacing: 0.18em; fill: $gold; }
-    img { width: 52px; height: 52px; }
-    @include up($bp-lg) { display: grid; }
   }
 }
 .is-loading .hero {
-  .kicker, .hero__title .line > span, .hero__sub, .hero__cta, .hero__badge, .hero__slide img { animation-play-state: paused; }
+  .kicker, .hero__title .line > span, .hero__sub, .hero__cta, .hero__slide img { animation-play-state: paused; }
 }
-@keyframes kenburns { from { transform: scale(1.14); } to { transform: scale(1.02); } }
-@keyframes line-up { from { transform: translate3d(0, 105%, 0) rotate(4deg); } to { transform: none; } }
-@keyframes line-out { to { transform: translate3d(0, -105%, 0); } }
+@keyframes kenburns { from { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes line-up { from { transform: translate3d(0, 108%, 0); } to { transform: none; } }
+@keyframes line-out { to { transform: translate3d(0, -108%, 0); } }
 @keyframes dot-fill { to { transform: scaleX(1); } }
-@keyframes rise { from { opacity: 0; transform: translate3d(0, 36px, 0); } }
-
-// ---------- Ticker ----------
-.ticker {
-  background: $red;
-  color: #fff;
-  overflow: hidden;
-  padding: 13px 0;
-  transform: rotate(-1.2deg) scale(1.02);
-  margin: -16px 0 0;
-  position: relative;
-  z-index: 6;
-  &__track {
-    display: flex;
-    align-items: center;
-    width: max-content;
-    animation: marquee 40s linear infinite;
-    will-change: transform;
-    span { @include display(1.4rem); padding: 0 20px; }
-    b { width: 9px; height: 9px; background: $gold; transform: rotate(45deg); flex: none; }
-  }
-}
-@keyframes marquee { to { transform: translate3d(-50%, 0, 0); } }
+@keyframes rise { from { opacity: 0; transform: translate3d(0, 28px, 0); } }
 
 // ---------- Sections ----------
 .sec {
-  padding: clamp(56px, 9vw, 110px) 0 0;
+  padding: clamp(64px, 10vw, 120px) 0 0;
   &__head {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
   }
 }
 
-// ---------- Craving rail ----------
-// Starts flush with the page gutter (the first card is never centred) and snaps loosely to card starts.
-.rail {
-  --gutter: max(20px, calc((100vw - 1240px) / 2));
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: var(--gutter);
-  padding: 8px var(--gutter) 28px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  &::-webkit-scrollbar { display: none; }
-  @include up($bp-md) { --gutter: max(36px, calc((100vw - 1240px) / 2)); }
+// ---------- Intro statement ----------
+.statement {
+  text-align: center;
+  max-width: 760px;
+  margin-inline: auto;
+  .script { justify-content: center; &::after { content: ''; width: 28px; height: 1px; background: currentColor; } }
+  p:not(.script) {
+    @include display(clamp(1.7rem, 4.4vw, 2.8rem));
+    font-weight: 400;
+    line-height: 1.18;
+    em { font-style: italic; color: $red; }
+  }
 }
-.rail-card {
+
+// ---------- Signatures ----------
+.sigs {
+  display: grid;
+  gap: 28px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include up($bp-md) { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+}
+.sig {
   position: relative;
-  flex: none;
-  width: min(70vw, 280px);
-  scroll-snap-align: start;
-  background: #fff;
-  border-radius: $radius;
-  overflow: hidden;
-  box-shadow: $shadow-sm;
   cursor: pointer;
   @include focus-ring;
-  &__img { aspect-ratio: 1; overflow: hidden; background: $cream-2; img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s $ease-out; } }
-  &__body { padding: 14px 16px 16px; h3 { @include display(1.5rem); } }
-  &__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
-  &:active { transform: scale(0.98); }
-  @include hover { img { transform: scale(1.08); } }
+  &__img {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: $radius;
+    background: $ink-2;
+    img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s $ease-out; }
+  }
+  &__body { padding-top: 14px; display: grid; gap: 4px; }
+  &__cat { @include label; font-size: 0.56rem; color: $gold-deep; }
+  h3 { @include display(1.4rem); font-weight: 600; @include up($bp-md) { font-size: 1.6rem; } }
+  .price { font-size: 1.1rem; color: $ink-3; font-weight: 500; }
+  &:active .sig__img img { transform: scale(1.03); }
+  @include hover { .sig__img img { transform: scale(1.06); } h3 { color: $red; } }
 }
 
-// ---------- Category tiles ----------
-// 7 tiles: phones = 1 wide + 3 rows of 2; desktop (4 cols) = 2x2 feature, 4 singles, then 2 wide tiles.
-.cats {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  @include up($bp-md) { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
-}
-.cat {
-  position: relative;
-  display: block;
-  aspect-ratio: 4 / 5;
-  border-radius: $radius;
-  overflow: hidden;
-  color: #fff;
-  background: $ink-2;
-  isolation: isolate;
-  @include focus-ring;
-  &:first-child { grid-column: span 2; aspect-ratio: 16 / 10; @include up($bp-md) { grid-row: span 2; aspect-ratio: auto; } }
-  @include up($bp-md) { &:nth-last-child(-n + 2) { grid-column: span 2; aspect-ratio: 16 / 7; } }
-
-  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform 1s $ease-out; }
-  &::before {
-    content: '';
-    position: absolute; inset: 0; z-index: -1;
-    background: linear-gradient(0deg, rgba($ink, 0.92) 0%, rgba($ink, 0.15) 58%, transparent);
-  }
-  &::after {
-    content: '';
-    position: absolute; inset: auto 0 0 0; height: 5px; z-index: 1;
-    background: linear-gradient(90deg, $red, $gold);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.5s $ease-out;
-  }
-  &__no { position: absolute; top: 12px; left: 14px; font-family: $font-display; font-size: 0.95rem; opacity: 0.85; }
-  &__txt {
-    position: absolute; left: 14px; right: 14px; bottom: 14px;
-    display: grid; gap: 2px;
-    b { @include display(clamp(1.2rem, 2.6vw, 2.1rem)); }
-    em { font-style: normal; font-size: 0.74rem; font-weight: 600; opacity: 0.82; }
-  }
-  &:active { transform: scale(0.98); }
-  @include hover { img { transform: scale(1.08); } &::after { transform: scaleX(1); } }
-}
-
-// ---------- Q-Skip ----------
-.sec--qskip {
-  margin-top: clamp(56px, 9vw, 110px);
-  padding: clamp(56px, 9vw, 110px) 0;
-  background: radial-gradient(80% 100% at 100% 0%, #3a2414 0%, $ink 60%);
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-  &::before {
-    content: 'Q-SKIP';
-    position: absolute;
-    right: -2%; bottom: -8%;
-    @include display(clamp(8rem, 26vw, 24rem));
-    color: transparent;
-    -webkit-text-stroke: 1.5px rgba($gold, 0.12);
-    pointer-events: none;
-  }
-}
-.qskip {
-  position: relative;
-  display: grid;
-  gap: 44px;
-  align-items: center;
-  @include up($bp-lg) { grid-template-columns: 1.2fr 0.8fr; }
+// ---------- Order ahead strip ----------
+.ahead {
+  margin-top: clamp(64px, 10vw, 120px);
+  padding: clamp(60px, 9vw, 110px) 0;
+  background: $ink;
+  color: $paper;
   .script { color: $gold; }
-  .hl { color: $gold; }
+  .display { color: $paper; em { color: $gold; } }
+  &__grid { display: grid; gap: 36px; @include up($bp-lg) { grid-template-columns: 0.9fr 1.1fr; align-items: end; gap: 80px; } }
+  &__cta { margin-top: 30px; }
 }
 .steps {
   display: grid;
-  gap: 20px;
-  margin: 30px 0 32px;
-  li { display: flex; gap: 16px; align-items: flex-start; }
-  li > span {
-    flex: none;
-    display: grid; place-items: center;
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    font-family: $font-display; font-size: 1.4rem;
-    background: $red; color: #fff;
+  border-top: 1px solid rgba($gold, 0.3);
+  li {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 6px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba($gold, 0.3);
   }
-  li:nth-child(2) > span { background: #ff7a00; }
-  li:nth-child(3) > span { background: $gold; color: $ink; }
-  b { display: block; font-size: 1.08rem; margin-bottom: 2px; }
-  p { color: rgba(255, 255, 255, 0.68); max-width: 44ch; }
-}
-.mock {
-  width: min(320px, 86%);
-  margin-inline: auto;
-  padding: 24px;
-  border-radius: 26px;
-  background: $cream;
-  color: $ink;
-  box-shadow: 12px 12px 0 $red;
-  animation: float 6s ease-in-out infinite;
-  &__top { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: $muted; }
-  &__no { @include display(5rem); margin: 10px 0 14px; }
-  &__bar { height: 8px; border-radius: 8px; background: $cream-2; overflow: hidden; i { display: block; height: 100%; background: linear-gradient(90deg, $red, $gold); transform-origin: left; animation: cook 3.4s $ease-io infinite alternate; } }
-  &__rows { display: grid; gap: 6px; margin: 16px 0; padding: 14px 0; border-block: 2px dashed $line; font-weight: 600; font-size: 0.88rem; }
-  &__code { display: flex; align-items: baseline; justify-content: space-between; small { font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.68rem; } b { font-family: $font-mono; font-size: 1.5rem; } }
-}
-@keyframes float { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(2deg) translate3d(0, -12px, 0); } }
-@keyframes cook { from { transform: scaleX(0.18); } to { transform: scaleX(0.92); } }
-
-// ---------- Story ----------
-.story {
-  display: grid;
-  gap: 36px;
-  align-items: center;
-  @include up($bp-lg) { grid-template-columns: 1fr 1fr; gap: 70px; }
-  &__img {
-    padding: 0 12px 12px 0;
-    img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: $radius; box-shadow: 12px 12px 0 $gold; }
-  }
-  &__copy > p:not(.script) { margin: 16px 0 24px; max-width: 52ch; font-size: 1.04rem; color: $ink-3; }
-}
-.stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px 18px;
-  margin-bottom: 28px;
-  b { display: block; @include display(clamp(2.5rem, 5vw, 3.8rem)); color: $red; }
-  div:nth-child(2) b { color: #ff7a00; }
-  div:nth-child(3) b { color: $gold-deep; }
-  div:nth-child(4) b { color: $ink; }
-  span { font-size: 0.84rem; font-weight: 600; color: $muted; }
+  li > span { font-family: $font-display; font-style: italic; font-size: 1.6rem; color: $gold; line-height: 1.1; }
+  b { display: block; font-family: $font-display; font-weight: 600; font-size: 1.35rem; margin-bottom: 2px; }
+  p { color: rgba($paper, 0.6); max-width: 44ch; font-size: 0.9rem; }
 }
 
 // ---------- About ----------
 .about {
-  padding-top: 36px;
+  padding-top: 40px;
   display: grid;
   gap: 22px;
-  &__img img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; border-radius: $radius; background: $cream-2; @include down($bp-md) { aspect-ratio: 4 / 3; } }
-  &__cards { display: grid; gap: 16px; @include up($bp-sm) { grid-template-columns: 1fr 1fr; } @include up($bp-lg) { grid-template-columns: repeat(4, 1fr); } }
-  &__gallery {
-    display: grid; gap: 16px; margin-top: 14px;
-    @include up($bp-md) { grid-template-columns: 0.8fr 1.2fr 1fr; }
-    figure { position: relative; border-radius: $radius; overflow: hidden; min-height: 240px; background: $ink-2; }
-    img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; transition: transform 1s $ease-out; }
-    figure { @include hover { img { transform: scale(1.06); } } }
-    figcaption { position: absolute; inset: auto 0 0 0; padding: 40px 18px 16px; color: #fff; font-weight: 700; background: linear-gradient(0deg, rgba($ink, 0.88), transparent); }
-  }
+  &__img img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; border-radius: $radius; background: $ink-2; @include down($bp-md) { aspect-ratio: 4 / 3; } }
+  &__cards { display: grid; gap: 14px; @include up($bp-sm) { grid-template-columns: 1fr 1fr; } @include up($bp-lg) { grid-template-columns: repeat(3, 1fr); } }
 }
 .info {
-  padding: 24px;
+  padding: 26px 24px;
   border-radius: $radius;
-  background: #fff;
-  box-shadow: $shadow-sm;
+  background: $paper;
+  border: 1px solid $line;
   display: grid;
   gap: 10px;
   align-content: start;
   justify-items: start;
-  > .ic { width: 30px; height: 30px; color: $red; }
-  h3 { @include display(1.55rem); }
+  > .ic { width: 24px; height: 24px; color: $gold-deep; stroke-width: 1.5; }
+  h3 { @include display(1.6rem); font-weight: 600; }
   p { color: $ink-3; }
-  &--dark { background: $ink; color: #fff; > .ic { color: $gold; } p { color: rgba(255, 255, 255, 0.72); } }
+  &--dark { background: $ink; color: $paper; border-color: $ink; > .ic { color: $gold; } p { color: rgba($paper, 0.66); } }
 }
