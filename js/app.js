@@ -1320,7 +1320,8 @@
        loaded. When the photos are in and the toss has peaked, time slows, the camera pushes through the
        ingredients and the screen burns away onto the hero. Tap anywhere to cut it short. */
     const intro = $('#intro'), veil = $('#veil'), pct = $('#introPct'), msg = $('#introMsg');
-    const msgs = ['Lighting the wok…', 'Warming the brioche…', 'Plating up…', 'Bon appétit.'];
+    const msgs = ['Setting the table…', 'Warming the kitchen…', 'Plating up…', 'Bon appétit.'];
+    const bar = $('#introBar');
     let skip = false;
     intro.addEventListener('pointerdown', () => { skip = true; }, { once: true });
     requestAnimationFrame(() => intro.classList.add('is-lit'));
@@ -1331,7 +1332,7 @@
     let done = 0, shown = 0;
     const step = () => {
       const from = shown; shown = (++done / total) * 100;
-      tween(from, shown, 500, (v) => { pct.textContent = pad(Math.round(v)); });
+      tween(from, shown, 600, (v) => { pct.textContent = pad(Math.round(v)); bar.style.transform = `scaleX(${v / 100})`; });
       msg.textContent = msgs[Math.min(msgs.length - 1, Math.floor((done / total) * (msgs.length - 1)))];
     };
     const load = (name) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = res; im.src = `img/${name}.webp`; }).then(step);
@@ -1349,7 +1350,7 @@
     await ready;
     // give the toss time to rise and peak (unless the visitor tapped)
     while (!skip && !REDUCED && performance.now() - t0 < (gl ? 2300 : 1200)) await wait(60);
-    pct.textContent = '100'; msg.textContent = msgs[3];
+    pct.textContent = '100'; msg.textContent = msgs[3]; bar.style.transform = 'scaleX(1)';
 
     intro.classList.add('is-out');
     await wait(REDUCED ? 0 : 160);
