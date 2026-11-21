@@ -1,4 +1,4 @@
-/* Kot Nou — menu data. Prices are in Mauritian rupees (Rs), VAT included.
+/* WebLuxe Foods — menu data. Prices are in Mauritian rupees (Rs), VAT included.
    Edit this file to change the restaurant details, dishes, prices and options. */
 (() => {
   /* ---------- Reusable option groups ----------
@@ -64,11 +64,11 @@
 
   window.MENU = {
     brand: {
-      name: 'Kot Nou',
+      name: 'WebLuxe Foods',
       tagline: 'Mauritian Street Kitchen',
       address: 'Royal Road, Grand Baie, Mauritius',
-      phone: '+230 5 000 0000',
-      email: 'bonzour@kotnou.example',
+      phone: '+230 5923 8436',
+      whatsapp: '23059238436', // orders are sent to this WhatsApp number (digits only, with country code)
       vatNo: 'VAT 00000000',
       vatRate: 0.15,
       hours: [600, 1320], // minutes from midnight, Mauritius time: 10:00 → 22:00

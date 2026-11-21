@@ -1,4 +1,3 @@
-@use 'sass:list';
 @use 'tokens' as *;
 
 // ---------- Hero ----------
@@ -11,157 +10,186 @@
   background: $ink;
   color: #fff;
 
-  &__slides { position: absolute; inset: 0; }
+  &__slides { position: absolute; inset: 0; will-change: transform; }
+  // Slides cross-fade with opacity and a slow zoom: both run on the compositor, so they stay smooth on phones.
   &__slide {
     position: absolute;
     inset: 0;
-    background-size: cover;
-    background-position: center;
     opacity: 0;
-    transform: scale(1.12);
-    clip-path: inset(0 100% 0 0);
-    transition: opacity 0.2s 1.2s, clip-path 0s 1.4s, transform 0s 1.4s;
-    &.is-on {
-      z-index: 1;
-      opacity: 1;
-      clip-path: inset(0 0 0 0);
-      transform: scale(1);
-      transition: clip-path 1.2s $ease-io, transform 7.5s linear, opacity 0s;
-    }
+    transition: opacity 1.1s ease;
+    img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.14); }
+    &.is-on { opacity: 1; img { animation: kenburns 8s linear forwards; } }
   }
   // Legibility scrim
-  &__slides::after {
+  &::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 2;
     background:
-      linear-gradient(90deg, rgba($ink, 0.88) 0%, rgba($ink, 0.55) 45%, rgba($ink, 0.1) 100%),
-      linear-gradient(0deg, rgba($ink, 0.85) 0%, transparent 45%);
+      linear-gradient(90deg, rgba($ink, 0.9) 0%, rgba($ink, 0.55) 48%, rgba($ink, 0.15) 100%),
+      linear-gradient(0deg, rgba($ink, 0.92) 0%, transparent 50%);
+    @include down($bp-md) {
+      background: linear-gradient(0deg, rgba($ink, 0.96) 0%, rgba($ink, 0.72) 48%, rgba($ink, 0.3) 100%);
+    }
   }
   &__fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
 
   &__inner {
     position: relative;
     z-index: 5;
-    padding: calc(#{$header-h} + 40px) 0 clamp(90px, 14vh, 140px);
+    padding: calc(#{$header-h} + 40px) 0 clamp(84px, 13vh, 130px);
   }
-  .kicker { color: $yellow; margin-bottom: 18px; animation: rise 0.9s $ease-out 0.1s both; }
+  .kicker { color: $gold; margin-bottom: 16px; animation: rise 0.9s $ease-out 0.1s both; }
   &__title {
-    @include display(clamp(4rem, 14.5vw, 12.5rem));
-    line-height: 0.86;
+    @include display(clamp(3.7rem, 14.5vw, 12rem));
+    line-height: 0.88;
     margin-left: -0.03em;
     .line { display: block; overflow: hidden; padding-top: 0.06em; }
     .line > span {
       display: block;
-      animation: line-up 1s $ease-out both;
+      animation: line-up 0.95s $ease-out both;
       animation-delay: calc(var(--d) * 110ms + 0.15s);
     }
-    .line:last-child > span { color: $yellow; }
+    .line:last-child > span { color: $gold; }
     &.swap .line > span { animation: line-out 0.38s $ease-io both; animation-delay: calc(var(--d) * 50ms); }
   }
   &__sub {
-    max-width: 44ch;
-    margin-top: 22px;
-    font-size: clamp(1rem, 1.5vw, 1.2rem);
-    color: rgba(255, 255, 255, 0.82);
+    max-width: 42ch;
+    margin-top: 20px;
+    font-size: clamp(0.98rem, 1.5vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.84);
     animation: rise 0.9s $ease-out 0.45s both;
   }
-  &__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; animation: rise 0.9s $ease-out 0.58s both; }
+  &__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 26px;
+    animation: rise 0.9s $ease-out 0.58s both;
+    @include down($bp-sm) { .btn { flex: 1 1 100%; } }
+  }
 
   &__dots {
     position: absolute;
     z-index: 6;
     left: 50%;
-    bottom: 28px;
+    bottom: 26px;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px;
+    gap: 6px;
     button {
-      width: 44px; height: 24px;
+      width: 44px; height: 30px;
       display: grid; align-items: center;
       i { display: block; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.3); overflow: hidden; position: relative; }
-      i::after { content: ''; position: absolute; inset: 0; background: $yellow; transform: scaleX(0); transform-origin: left; }
+      i::after { content: ''; position: absolute; inset: 0; background: $gold; transform: scaleX(0); transform-origin: left; }
       &.is-on i::after { animation: dot-fill 6.5s linear both; }
     }
   }
+  // Medallion badge, bottom right (larger screens)
+  &__badge {
+    display: none;
+    position: absolute;
+    z-index: 6;
+    right: clamp(24px, 6vw, 90px);
+    bottom: clamp(70px, 14vh, 130px);
+    align-items: center;
+    gap: 14px;
+    padding: 12px 22px 12px 12px;
+    border-radius: 999px;
+    background: rgba($ink, 0.72);
+    box-shadow: inset 0 0 0 1.5px rgba($gold, 0.5);
+    animation: rise 0.9s $ease-out 0.8s both;
+    .coin { --s: 72px; }
+    span { @include display(1.35rem); color: $gold; line-height: 1; }
+    @include up($bp-lg) { display: flex; }
+  }
 }
 .is-loading .hero {
-  .kicker, .hero__title .line > span, .hero__sub, .hero__cta { animation-play-state: paused; }
+  .kicker, .hero__title .line > span, .hero__sub, .hero__cta, .hero__badge, .hero__slide img { animation-play-state: paused; }
 }
-@keyframes line-up { from { transform: translateY(105%) rotate(4deg); } to { transform: none; } }
-@keyframes line-out { to { transform: translateY(-105%); } }
+@keyframes kenburns { from { transform: scale(1.14); } to { transform: scale(1.02); } }
+@keyframes line-up { from { transform: translate3d(0, 105%, 0) rotate(4deg); } to { transform: none; } }
+@keyframes line-out { to { transform: translate3d(0, -105%, 0); } }
 @keyframes dot-fill { to { transform: scaleX(1); } }
-@keyframes rise { from { opacity: 0; transform: translateY(40px); } }
+@keyframes rise { from { opacity: 0; transform: translate3d(0, 36px, 0); } }
 
 // ---------- Ticker ----------
 .ticker {
   background: $red;
   color: #fff;
   overflow: hidden;
-  padding: 14px 0;
+  padding: 13px 0;
   transform: rotate(-1.2deg) scale(1.02);
-  margin: -18px 0 0;
+  margin: -16px 0 0;
   position: relative;
   z-index: 6;
-  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.6);
   &__track {
     display: flex;
     align-items: center;
     width: max-content;
-    animation: marquee 38s linear infinite;
-    span { @include display(1.5rem); padding: 0 22px; }
-    b { width: 10px; height: 10px; background: $yellow; transform: rotate(45deg); flex: none; }
+    animation: marquee 40s linear infinite;
+    will-change: transform;
+    span { @include display(1.4rem); padding: 0 20px; }
+    b { width: 9px; height: 9px; background: $gold; transform: rotate(45deg); flex: none; }
   }
 }
-@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes marquee { to { transform: translate3d(-50%, 0, 0); } }
 
 // ---------- Sections ----------
 .sec {
-  padding: clamp(64px, 9vw, 120px) 0 0;
+  padding: clamp(56px, 9vw, 110px) 0 0;
   &__head {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 34px;
+    gap: 16px;
+    margin-bottom: 28px;
   }
 }
 
 // ---------- Craving rail ----------
+// Starts flush with the page gutter (the first card is never centred) and snaps loosely to card starts.
 .rail {
+  --gutter: max(20px, calc((100vw - 1240px) / 2));
   display: flex;
-  gap: 18px;
+  gap: 16px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 10px max(20px, calc((100vw - 1240px) / 2)) 30px;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--gutter);
+  padding: 8px var(--gutter) 28px;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   &::-webkit-scrollbar { display: none; }
+  @include up($bp-md) { --gutter: max(36px, calc((100vw - 1240px) / 2)); }
 }
 .rail-card {
+  position: relative;
   flex: none;
-  width: min(74vw, 290px);
-  scroll-snap-align: center;
+  width: min(70vw, 280px);
+  scroll-snap-align: start;
   background: #fff;
   border-radius: $radius;
   overflow: hidden;
   box-shadow: $shadow-sm;
   cursor: pointer;
-  transition: transform 0.5s $ease-out, box-shadow 0.5s $ease-out, opacity 0.8s $ease-out;
   @include focus-ring;
-  &__img { aspect-ratio: 1; overflow: hidden; img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s $ease-out; } }
-  &__body { padding: 16px 18px 18px; h3 { @include display(1.6rem); } }
-  &__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-  &:hover { transform: translateY(-8px) rotate(-1deg); box-shadow: $shadow; img { transform: scale(1.08); } }
+  &__img { aspect-ratio: 1; overflow: hidden; background: $cream-2; img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s $ease-out; } }
+  &__body { padding: 14px 16px 16px; h3 { @include display(1.5rem); } }
+  &__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  &:active { transform: scale(0.98); }
+  @include hover { img { transform: scale(1.08); } }
 }
 
 // ---------- Category tiles ----------
+// 7 tiles: phones = 1 wide + 3 rows of 2; desktop (4 cols) = 2x2 feature, 4 singles, then 2 wide tiles.
 .cats {
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(2, 1fr);
-  @include up($bp-md) { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include up($bp-md) { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
 }
 .cat {
   position: relative;
@@ -170,47 +198,41 @@
   border-radius: $radius;
   overflow: hidden;
   color: #fff;
-  background: $ink;
+  background: $ink-2;
   isolation: isolate;
   @include focus-ring;
-  // First tile is a feature tile
-  &:first-child { grid-column: span 2; aspect-ratio: auto; min-height: 240px; @include up($bp-md) { grid-row: span 2; } }
-  &:last-child { @include down($bp-md) { grid-column: span 2; aspect-ratio: 16 / 9; } }
+  &:first-child { grid-column: span 2; aspect-ratio: 16 / 10; @include up($bp-md) { grid-row: span 2; aspect-ratio: auto; } }
+  @include up($bp-md) { &:nth-last-child(-n + 2) { grid-column: span 2; aspect-ratio: 16 / 7; } }
 
-  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform 1.1s $ease-out; }
+  img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform 1s $ease-out; }
   &::before {
     content: '';
     position: absolute; inset: 0; z-index: -1;
-    background: linear-gradient(0deg, rgba($ink, 0.9) 0%, rgba($ink, 0.15) 55%, transparent);
-    transition: background 0.4s;
+    background: linear-gradient(0deg, rgba($ink, 0.92) 0%, rgba($ink, 0.15) 58%, transparent);
   }
-  // Coloured wipe on hover — a different flag colour per tile
   &::after {
     content: '';
-    position: absolute; inset: auto 0 0 0; height: 6px; z-index: 1;
-    background: var(--c, #{$red});
+    position: absolute; inset: auto 0 0 0; height: 5px; z-index: 1;
+    background: linear-gradient(90deg, $red, $gold);
     transform: scaleX(0); transform-origin: left;
-    transition: transform 0.6s $ease-out;
+    transition: transform 0.5s $ease-out;
   }
-  @each $c in $flag {
-    $n: list.index($flag, $c);
-    &:nth-child(4n + #{$n}) { --c: #{$c}; }
-  }
-  &__no { position: absolute; top: 14px; left: 16px; font-family: $font-display; font-size: 1rem; opacity: 0.8; }
+  &__no { position: absolute; top: 12px; left: 14px; font-family: $font-display; font-size: 0.95rem; opacity: 0.85; }
   &__txt {
-    position: absolute; left: 16px; right: 16px; bottom: 18px;
+    position: absolute; left: 14px; right: 14px; bottom: 14px;
     display: grid; gap: 2px;
-    b { @include display(clamp(1.3rem, 2.6vw, 2.1rem)); }
-    em { font-style: normal; font-size: 0.78rem; font-weight: 600; opacity: 0.8; }
+    b { @include display(clamp(1.2rem, 2.6vw, 2.1rem)); }
+    em { font-style: normal; font-size: 0.74rem; font-weight: 600; opacity: 0.82; }
   }
-  &:hover { img { transform: scale(1.1); } &::after { transform: scaleX(1); } }
+  &:active { transform: scale(0.98); }
+  @include hover { img { transform: scale(1.08); } &::after { transform: scaleX(1); } }
 }
 
 // ---------- Q-Skip ----------
 .sec--qskip {
-  margin-top: clamp(64px, 9vw, 120px);
-  padding: clamp(64px, 9vw, 120px) 0;
-  background: $ink;
+  margin-top: clamp(56px, 9vw, 110px);
+  padding: clamp(56px, 9vw, 110px) 0;
+  background: radial-gradient(80% 100% at 100% 0%, #3a2414 0%, $ink 60%);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -219,99 +241,98 @@
     position: absolute;
     right: -2%; bottom: -8%;
     @include display(clamp(8rem, 26vw, 24rem));
-    color: rgba(255, 255, 255, 0.035);
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba($gold, 0.12);
     pointer-events: none;
   }
 }
 .qskip {
   position: relative;
   display: grid;
-  gap: 50px;
+  gap: 44px;
   align-items: center;
   @include up($bp-lg) { grid-template-columns: 1.2fr 0.8fr; }
-  .script { color: $yellow; }
-  .hl { color: $yellow; }
+  .script { color: $gold; }
+  .hl { color: $gold; }
 }
 .steps {
   display: grid;
-  gap: 22px;
-  margin: 34px 0 36px;
-  counter-reset: s;
-  li { display: flex; gap: 18px; align-items: flex-start; }
+  gap: 20px;
+  margin: 30px 0 32px;
+  li { display: flex; gap: 16px; align-items: flex-start; }
   li > span {
     flex: none;
     display: grid; place-items: center;
-    width: 54px; height: 54px;
+    width: 50px; height: 50px;
     border-radius: 50%;
-    font-family: $font-display; font-size: 1.5rem;
+    font-family: $font-display; font-size: 1.4rem;
     background: $red; color: #fff;
   }
-  li:nth-child(2) > span { background: $blue; }
-  li:nth-child(3) > span { background: $green; }
-  b { display: block; font-size: 1.12rem; margin-bottom: 2px; }
+  li:nth-child(2) > span { background: #ff7a00; }
+  li:nth-child(3) > span { background: $gold; color: $ink; }
+  b { display: block; font-size: 1.08rem; margin-bottom: 2px; }
   p { color: rgba(255, 255, 255, 0.68); max-width: 44ch; }
 }
 .mock {
-  width: min(340px, 100%);
+  width: min(320px, 86%);
   margin-inline: auto;
-  padding: 26px;
+  padding: 24px;
   border-radius: 26px;
   background: $cream;
   color: $ink;
-  transform: rotate(4deg);
-  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8), 14px 14px 0 $red;
+  box-shadow: 12px 12px 0 $red;
   animation: float 6s ease-in-out infinite;
-  &__top { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: $muted; }
-  &__no { @include display(5.4rem); margin: 10px 0 14px; }
-  &__bar { height: 8px; border-radius: 8px; background: $cream-2; overflow: hidden; i { display: block; height: 100%; width: 70%; background: linear-gradient(90deg, $flag); animation: cook 3.4s $ease-io infinite alternate; } }
-  &__rows { display: grid; gap: 6px; margin: 18px 0; padding: 14px 0; border-block: 2px dashed $line; font-weight: 600; font-size: 0.9rem; }
-  &__code { display: flex; align-items: baseline; justify-content: space-between; small { font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.7rem; } b { font-family: $font-mono; font-size: 1.6rem; } }
+  &__top { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: $muted; }
+  &__no { @include display(5rem); margin: 10px 0 14px; }
+  &__bar { height: 8px; border-radius: 8px; background: $cream-2; overflow: hidden; i { display: block; height: 100%; background: linear-gradient(90deg, $red, $gold); transform-origin: left; animation: cook 3.4s $ease-io infinite alternate; } }
+  &__rows { display: grid; gap: 6px; margin: 16px 0; padding: 14px 0; border-block: 2px dashed $line; font-weight: 600; font-size: 0.88rem; }
+  &__code { display: flex; align-items: baseline; justify-content: space-between; small { font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.68rem; } b { font-family: $font-mono; font-size: 1.5rem; } }
 }
-@keyframes float { 50% { transform: rotate(2deg) translateY(-14px); } }
-@keyframes cook { from { width: 18%; } to { width: 92%; } }
+@keyframes float { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(2deg) translate3d(0, -12px, 0); } }
+@keyframes cook { from { transform: scaleX(0.18); } to { transform: scaleX(0.92); } }
 
 // ---------- Story ----------
 .story {
   display: grid;
-  gap: 40px;
+  gap: 36px;
   align-items: center;
   @include up($bp-lg) { grid-template-columns: 1fr 1fr; gap: 70px; }
   &__img {
-    position: relative;
-    img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: $radius; box-shadow: 16px 16px 0 $yellow; }
+    padding: 0 12px 12px 0;
+    img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: $radius; box-shadow: 12px 12px 0 $gold; }
   }
-  &__copy > p:not(.script) { margin: 18px 0 26px; max-width: 52ch; font-size: 1.06rem; color: $ink-3; }
+  &__copy > p:not(.script) { margin: 16px 0 24px; max-width: 52ch; font-size: 1.04rem; color: $ink-3; }
 }
 .stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 22px 18px;
-  margin-bottom: 30px;
-  b { display: block; @include display(clamp(2.6rem, 5vw, 3.8rem)); color: $red; }
-  div:nth-child(2) b { color: $blue; }
-  div:nth-child(3) b { color: $green; }
+  gap: 20px 18px;
+  margin-bottom: 28px;
+  b { display: block; @include display(clamp(2.5rem, 5vw, 3.8rem)); color: $red; }
+  div:nth-child(2) b { color: #ff7a00; }
+  div:nth-child(3) b { color: $gold-deep; }
   div:nth-child(4) b { color: $ink; }
-  span { font-size: 0.86rem; font-weight: 600; color: $muted; }
+  span { font-size: 0.84rem; font-weight: 600; color: $muted; }
 }
 
 // ---------- About ----------
 .about {
-  padding-top: 46px;
+  padding-top: 36px;
   display: grid;
-  gap: 26px;
-  &__img img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; border-radius: $radius; @include down($bp-md) { aspect-ratio: 4 / 3; } }
-  &__cards { display: grid; gap: 18px; @include up($bp-sm) { grid-template-columns: 1fr 1fr; } @include up($bp-lg) { grid-template-columns: repeat(4, 1fr); } }
+  gap: 22px;
+  &__img img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; border-radius: $radius; background: $cream-2; @include down($bp-md) { aspect-ratio: 4 / 3; } }
+  &__cards { display: grid; gap: 16px; @include up($bp-sm) { grid-template-columns: 1fr 1fr; } @include up($bp-lg) { grid-template-columns: repeat(4, 1fr); } }
   &__gallery {
-    display: grid; gap: 18px; margin-top: 20px;
+    display: grid; gap: 16px; margin-top: 14px;
     @include up($bp-md) { grid-template-columns: 0.8fr 1.2fr 1fr; }
-    figure { position: relative; border-radius: $radius; overflow: hidden; min-height: 260px; }
+    figure { position: relative; border-radius: $radius; overflow: hidden; min-height: 240px; background: $ink-2; }
     img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; transition: transform 1s $ease-out; }
-    figure:hover img { transform: scale(1.06); }
-    figcaption { position: absolute; inset: auto 0 0 0; padding: 40px 18px 16px; color: #fff; font-weight: 700; background: linear-gradient(0deg, rgba($ink, 0.85), transparent); }
+    figure { @include hover { img { transform: scale(1.06); } } }
+    figcaption { position: absolute; inset: auto 0 0 0; padding: 40px 18px 16px; color: #fff; font-weight: 700; background: linear-gradient(0deg, rgba($ink, 0.88), transparent); }
   }
 }
 .info {
-  padding: 26px;
+  padding: 24px;
   border-radius: $radius;
   background: #fff;
   box-shadow: $shadow-sm;
@@ -320,8 +341,7 @@
   align-content: start;
   justify-items: start;
   > .ic { width: 30px; height: 30px; color: $red; }
-  h3 { @include display(1.6rem); }
+  h3 { @include display(1.55rem); }
   p { color: $ink-3; }
-  a:not(.btn):hover { color: $red; }
-  &--dark { background: $ink; color: #fff; > .ic { color: $yellow; } p { color: rgba(255, 255, 255, 0.72); } }
+  &--dark { background: $ink; color: #fff; > .ic { color: $gold; } p { color: rgba(255, 255, 255, 0.72); } }
 }

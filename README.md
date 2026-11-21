@@ -1,37 +1,41 @@
-# Kot Nou — Mauritian Street Kitchen
+# WebLuxe Foods — Mauritian Street Kitchen
 
-A takeaway-only ordering site for a Mauritian restaurant, built around **Q-Skip**: order ahead on your
-phone, skip the queue and collect at the counter.
+A concept site by WebLuxe: a takeaway-only ordering site for a Mauritian restaurant, built around
+**Q-Skip** — order ahead on your phone, skip the queue and collect at the counter.
 
-It is a static site (HTML, SCSS, vanilla JS, canvas). There is no backend, so it can be hosted on
-GitHub Pages as-is.
+It is a static site (HTML, SCSS, vanilla JS, canvas), so it runs on GitHub Pages with no backend.
+Orders are sent to the restaurant as a ready-written **WhatsApp message**.
 
 ## What's in it
 
-- **Intro loading screen** with canvas-drawn flag ribbons and a progress counter.
-- **Home**: hero slider with a canvas ember effect, dish ticker, bestseller rail, menu category tiles,
-  a "how Q-Skip works" section and a story block with animated counters.
+- **Intro**: a canvas particle animation that assembles the wordmark, with a 3D gold medallion
+  (rendered in Blender, played as a 40-frame sprite).
+- **Tab transitions**: ink floods out from the point you tapped, the medallion spins, the new page rises in.
+- **Home**: hero slider with a canvas ember effect and parallax, dish ticker, bestseller rail,
+  menu category tiles, "how Q-Skip works" and a story block with animated counters.
 - **Menu**: seven menus (Starters, Street Classics, Noodles & Rice, Curries & Mains, Burgers & Sides,
   Desserts, Drinks), a sticky category bar with a sliding indicator, and search.
-- **Item options**: every dish opens a sheet before it is added, with required and optional choices
+- **Item options**: every dish opens a sheet before it is added — required and optional choices
   (protein, spice level, sauces with a limit, extras, "remove" items, make-it-a-meal, sizes),
-  a quantity stepper, special instructions and a live price.
-- **Cart and checkout** (takeaway only): edit quantities or re-open a line's options, enter name and
-  mobile number, choose ASAP or a pickup slot, pick a payment method, review totals with 15% VAT.
-- **Q-Skip ticket**: order number, pickup code, live status tracker
-  (Received → On the fire → Ready → Collected) and confetti when it is ready.
-- **Receipt**: thermal-style receipt with a QR code. Print / save as PDF, or download as a PNG.
+  quantity, special instructions and a live rolling price. On phones the sheet can be dragged down to close.
+- **Cart and checkout** (takeaway only): edit quantities or re-open a line's options, name and mobile
+  number, ASAP or a pickup slot, payment method at the counter, totals with 15% VAT.
+- **Order by WhatsApp**: placing the order opens WhatsApp with the full order written out, addressed to
+  the restaurant's number. The customer presses send.
+- **Q-Skip ticket**: order number, pickup code, status tracker and confetti.
+- **Receipt** with a QR code: print / save as PDF, or save as an image.
 - **My Orders**: order history on the device, with "order again".
-- **Tab transitions**: a four-stripe curtain wipes between sections.
-- Responsive, keyboard accessible, and respects `prefers-reduced-motion`.
+- Small touches: cards tilt toward the cursor on desktop, haptic ticks on Android, add-to-cart fly
+  animation, scroll progress bar. Respects `prefers-reduced-motion`.
 
-## Important: this is a demo ordering flow
+## What is and isn't real
 
-Orders are stored in the browser's `localStorage` only. **No kitchen receives the order and no payment
-is taken.** The status tracker advances on a timer (about 45 seconds to "ready") so the whole flow can
-be seen quickly. To take real orders the site needs a backend (order API, kitchen screen, payments).
-
-The restaurant name, address, phone number and VAT number in `js/data.js` are placeholders.
+- Orders **are** delivered: the WhatsApp message goes to the number in `js/data.js` once the customer sends it.
+- Orders are also saved in the browser's `localStorage` so the ticket and receipt can be reopened.
+- The **status tracker is a preview**: it advances on a timer (about 45 seconds to "ready"). A real
+  tracker needs a backend the kitchen can update.
+- No payment is taken online; customers pay at the counter.
+- The address, VAT number, prices and opening hours in `js/data.js` are placeholders.
 
 ## Run it locally
 
@@ -46,9 +50,9 @@ Any static file server works; nothing needs to be built to run the site.
 
 | What | Where |
 |---|---|
-| Restaurant details, opening hours, VAT rate | `js/data.js` → `brand` |
+| Restaurant name, phone, WhatsApp number, hours, VAT rate | `js/data.js` → `brand` |
 | Menus, dishes, prices, option groups | `js/data.js` → `categories`, `items` |
-| Photos | `img/` (one `.jpg` per dish, named by the dish's `img` field) |
+| Photos | `img/` — each dish has `name.webp` (800px wide) and `name-sm.webp` (420px) |
 | Styles | `scss/` — then run `npm run build` to regenerate `css/main.css` |
 | Behaviour | `js/app.js` (app), `js/fx.js` (canvas effects) |
 

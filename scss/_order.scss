@@ -8,48 +8,48 @@
   width: min(480px, 100%);
   height: 100dvh;
   background: $cream;
-  animation: drawer-in 0.55s $ease-out both;
-  &.closing { animation: drawer-out 0.28s ease-in both; }
+  animation: drawer-in 0.5s $ease-out both;
+  will-change: transform;
+  &.closing { animation: drawer-out 0.26s ease-in both; }
 
   &__in { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
-  &__head { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-bottom: 1px solid $line; }
+  &__head { display: flex; align-items: center; gap: 12px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; border-bottom: 1px solid $line; }
   &__view { overflow: hidden; }
-  &__track { display: flex; height: 100%; transition: transform 0.6s $ease-io; }
+  &__track { display: flex; height: 100%; transition: transform 0.5s $ease-io; will-change: transform; }
   &__step {
     flex: none; width: 100%; height: 100%;
-    overflow-y: auto; overscroll-behavior: contain;
-    padding: 24px 22px 30px;
-    h2 { font-size: 2.2rem; margin-bottom: 8px; }
+    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    padding: 22px 20px 28px;
+    h2 { font-size: 2.1rem; margin-bottom: 8px; }
   }
-  &__sub { display: flex; align-items: center; gap: 8px; margin: 26px 0 12px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
-  &__foot { padding: 14px 22px calc(16px + env(safe-area-inset-bottom)); background: #fff; box-shadow: 0 -10px 30px -20px rgba(0, 0, 0, 0.4); }
+  &__sub { display: flex; align-items: center; gap: 8px; margin: 24px 0 12px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  &__foot { padding: 12px 20px calc(14px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid $line; }
   &__total {
-    display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px;
+    display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;
     span { font-weight: 700; small { color: $muted; font-weight: 600; margin-left: 4px; } }
-    b { font-family: $font-display; font-weight: 400; font-size: 1.7rem; }
+    b { font-family: $font-display; font-weight: 400; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
   }
 }
-@keyframes drawer-in { from { transform: translateX(100%); } }
-@keyframes drawer-out { to { transform: translateX(100%); } }
+@keyframes drawer-in { from { transform: translate3d(100%, 0, 0); } }
+@keyframes drawer-out { to { transform: translate3d(100%, 0, 0); } }
 
 .stepper {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.78rem;
+  gap: 6px;
+  font-size: 0.76rem;
   font-weight: 800;
   color: $muted;
-  li { display: flex; align-items: center; gap: 6px; transition: color 0.3s; }
-  li + li::before { content: ''; width: 18px; height: 2px; background: $line; margin-right: 2px; }
+  li { display: flex; align-items: center; gap: 6px; }
+  li + li::before { content: ''; width: 14px; height: 2px; background: $line; margin-right: 2px; }
   span {
     display: grid; place-items: center;
     width: 24px; height: 24px; border-radius: 50%;
     background: $cream-2; font-size: 0.72rem;
-    transition: background 0.3s, color 0.3s, transform 0.4s $ease-back;
     .ic { width: 13px; height: 13px; stroke-width: 3; }
   }
-  .is-on { color: $ink; span { background: $ink; color: #fff; transform: scale(1.12); } }
+  .is-on { color: $ink; span { background: $ink; color: #fff; } }
   .is-done { color: $green; span { background: $green; color: #fff; } }
 }
 .pillnote {
@@ -57,24 +57,24 @@
   padding: 6px 12px; border-radius: 999px;
   background: rgba($green, 0.12); color: #007a38;
   font-size: 0.78rem; font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .lines { display: grid; }
 .line {
   display: flex;
   gap: 14px;
-  padding: 18px 0;
+  padding: 16px 0;
   border-bottom: 2px dashed $line;
-  animation: rise-sm 0.5s $ease-out both;
-  > img { flex: none; width: 72px; height: 72px; border-radius: 16px; object-fit: cover; }
+  > img { flex: none; width: 72px; height: 72px; border-radius: 16px; object-fit: cover; background: $cream-2; }
   &__main { flex: 1; min-width: 0; }
-  &__top { display: flex; justify-content: space-between; gap: 12px; b { font-size: 1.02rem; } span { font-family: $font-display; font-size: 1.15rem; white-space: nowrap; } }
+  &__top { display: flex; justify-content: space-between; gap: 12px; b { font-size: 1.02rem; } span { font-family: $font-display; font-size: 1.15rem; white-space: nowrap; font-variant-numeric: tabular-nums; } }
   &__opts { margin-top: 4px; font-size: 0.8rem; color: $muted; display: grid; gap: 1px; }
-  &__note { margin-top: 4px; font-size: 0.8rem; font-style: italic; color: $ink-3; }
-  &__ctl { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+  &__note { margin-top: 4px; font-size: 0.8rem; font-style: italic; color: $ink-3; overflow-wrap: anywhere; }
+  &__ctl { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+  &.is-out { animation: line-out 0.24s ease-in both; }
 }
-@keyframes rise-sm { from { opacity: 0; transform: translateY(12px); } }
+@keyframes line-out { to { opacity: 0; transform: translate3d(40px, 0, 0); } }
 
 .field {
   display: grid;
@@ -89,8 +89,8 @@
     background: #fff;
     outline: 0;
     font-weight: 600;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    &:focus { border-color: $ink; box-shadow: 0 0 0 4px rgba($yellow, 0.5); }
+    font-size: 16px; // stops iOS zooming the page on focus
+    &:focus { border-color: $ink; box-shadow: 0 0 0 4px rgba($gold, 0.45); }
     &::placeholder { color: rgba($muted, 0.7); font-weight: 500; }
   }
   textarea { resize: vertical; }
@@ -103,160 +103,167 @@
 .choice {
   display: grid;
   gap: 10px;
-  &--wrap { grid-template-columns: repeat(3, 1fr); }
+  &--wrap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   label { position: relative; cursor: pointer; }
   input { position: absolute; opacity: 0; }
   label > span {
     display: grid;
     gap: 1px;
+    align-content: center;
     height: 100%;
-    padding: 12px 14px;
+    min-height: 52px;
+    padding: 10px 14px;
     border-radius: $radius-sm;
     background: #fff;
     border: 2px solid transparent;
-    box-shadow: $shadow-sm;
-    transition: border-color 0.2s, background 0.2s, transform 0.3s $ease-back;
-    b { font-size: 0.98rem; }
-    small { color: $muted; font-size: 0.76rem; font-weight: 600; }
+    transition: border-color 0.15s, background 0.15s;
+    b { font-size: 0.96rem; }
+    small { color: $muted; font-size: 0.74rem; font-weight: 600; }
   }
-  &--wrap label > span { text-align: center; b { font-family: $font-display; font-weight: 400; font-size: 1.25rem; } }
-  input:checked + span { border-color: $red; background: rgba($red, 0.05); transform: scale(1.02); }
+  &--wrap label > span { text-align: center; padding-inline: 6px; b { font-family: $font-display; font-weight: 400; font-size: 1.2rem; } }
+  input:checked + span { border-color: $red; background: rgba($red, 0.05); }
   input:focus-visible + span { outline: 3px solid $blue; outline-offset: 2px; }
 }
 .summary {
   display: grid;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 12px;
   padding: 16px;
   border-radius: $radius-sm;
   background: #fff;
-  box-shadow: $shadow-sm;
   div { display: flex; justify-content: space-between; gap: 14px; font-size: 0.9rem; }
   span { color: $muted; font-weight: 600; }
-  b { text-align: right; }
+  b { text-align: right; overflow-wrap: anywhere; }
 }
 .totals {
-  margin-top: 22px;
+  margin-top: 20px;
   display: grid;
   gap: 8px;
   div { display: flex; justify-content: space-between; color: $ink-3; font-size: 0.92rem; }
-  &__big { padding-top: 12px; margin-top: 4px; border-top: 2px dashed $line; color: $ink !important; dt { font-weight: 800; } dd { font-family: $font-display; font-size: 1.7rem; } }
+  &__big { padding-top: 12px; margin-top: 4px; border-top: 2px dashed $line; color: $ink !important; dt { font-weight: 800; } dd { font-family: $font-display; font-size: 1.6rem; } }
 }
 
 // ---------- Orders list ----------
-.orders { padding-top: 36px; display: grid; gap: 16px; max-width: 860px; }
+.orders { padding-top: 30px; display: grid; gap: 14px; max-width: 860px; }
 .ocard {
   background: #fff;
   border-radius: $radius;
   box-shadow: $shadow-sm;
   overflow: hidden;
-  transition: transform 0.4s $ease-out, box-shadow 0.4s $ease-out, opacity 0.8s $ease-out;
-  &:hover { transform: translateY(-3px); box-shadow: $shadow; }
-  &__main { display: flex; align-items: center; gap: 18px; padding: 20px 22px; }
-  &__no { @include display(2.3rem); color: $red; flex: none; }
+  &__main { display: flex; align-items: center; gap: 16px; padding: 18px 20px; }
+  &__no { @include display(2.1rem); color: $red; flex: none; }
   &__info { flex: 1; min-width: 0; display: grid; gap: 4px; justify-items: start;
-    p { font-weight: 600; font-size: 0.92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+    p { font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
     small { color: $muted; } }
-  &__total { font-family: $font-display; font-size: 1.4rem; white-space: nowrap; }
-  &__acts { display: flex; gap: 22px; padding: 10px 22px; background: $cream-2; }
+  &__total { font-family: $font-display; font-size: 1.35rem; white-space: nowrap; }
+  &__acts { display: flex; flex-wrap: wrap; gap: 4px 22px; padding: 6px 20px; background: $cream-2; }
   @include down($bp-sm) { &__main { flex-wrap: wrap; } &__info { flex-basis: 100%; order: 3; } &__total { margin-left: auto; } }
 }
 
 // ---------- Order page: live ticket + receipt ----------
 .order {
-  padding-top: 34px;
+  padding-top: 26px;
   display: grid;
-  gap: 34px;
+  gap: 30px;
   align-items: start;
-  @include up($bp-lg) { grid-template-columns: 1.15fr 0.85fr; gap: 50px; }
-  &__side { display: grid; gap: 16px; justify-items: center; }
+  @include up($bp-lg) { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 50px; }
+  &__main { display: grid; gap: 16px; min-width: 0; }
+  &__side { display: grid; gap: 14px; justify-items: center; min-width: 0; }
   &__acts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 }
 .ticket {
   background: $ink;
   color: #fff;
-  border-radius: 28px;
-  padding: 28px 24px;
-  box-shadow: $shadow;
+  border-radius: 26px;
+  padding: 26px 22px;
   position: relative;
   overflow: hidden;
-  animation: rise-sm 0.7s $ease-out both;
-  @include up($bp-md) { padding: 38px; }
-  &::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 8px; background: linear-gradient(90deg, $red 25%, $blue 25% 50%, $yellow 50% 75%, $green 75%); }
+  @include up($bp-md) { padding: 36px; }
+  &::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 6px; background: linear-gradient(90deg, $red, $gold); }
 
-  &__top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px;
-    small { display: block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); } }
-  &__no { @include display(clamp(4.6rem, 14vw, 8rem)); color: $yellow; margin-top: 4px; }
-  &__codebox { padding: 12px 18px; border-radius: $radius-sm; background: rgba(255, 255, 255, 0.08); b { font-family: $font-mono; font-size: 1.9rem; letter-spacing: 0.04em; } }
+  &__top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;
+    small { display: block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); } }
+  &__no { @include display(clamp(4.2rem, 17vw, 8rem)); color: $gold; margin-top: 4px; }
+  &__codebox { padding: 10px 16px; border-radius: $radius-sm; background: rgba(255, 255, 255, 0.08); b { font-family: $font-mono; font-size: 1.7rem; letter-spacing: 0.04em; } }
   // Perforated tear line
   &__tear {
-    margin: 26px -24px;
+    margin: 22px -22px;
     border-top: 3px dashed rgba(255, 255, 255, 0.22);
     position: relative;
-    @include up($bp-md) { margin-inline: -38px; }
+    @include up($bp-md) { margin-inline: -36px; }
     &::before, &::after { content: ''; position: absolute; top: -14px; width: 26px; height: 26px; border-radius: 50%; background: $cream; }
     &::before { left: -13px; } &::after { right: -13px; }
   }
   &__status {
-    h2 { font-size: clamp(2.2rem, 6vw, 3.6rem); margin: 12px 0 6px; animation: rise-sm 0.6s $ease-out both; }
+    h2 { font-size: clamp(2rem, 7vw, 3.4rem); margin: 12px 0 6px; animation: rise-sm 0.5s $ease-out both; }
     p { color: rgba(255, 255, 255, 0.7); }
     &--ready h2 { color: #7dffb1; }
   }
   .chip--received, .chip--preparing { background: rgba(255, 255, 255, 0.14); color: #fff; }
-  .chip--preparing { color: $yellow; }
-  &__eta { display: flex; align-items: center; gap: 8px; margin-top: 20px; color: rgba(255, 255, 255, 0.8); b { color: #fff; } }
-  .btn { margin-top: 22px; }
+  .chip--preparing { color: $gold; }
+  &__eta { display: flex; align-items: center; gap: 8px; margin-top: 18px; color: rgba(255, 255, 255, 0.8); b { color: #fff; } }
+  .btn { margin-top: 20px; }
 }
+@keyframes rise-sm { from { opacity: 0; transform: translate3d(0, 14px, 0); } }
 .track {
-  margin-top: 30px;
+  margin-top: 26px;
   &__bar {
     height: 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.12); overflow: hidden;
-    i { display: block; height: 100%; width: var(--fill, 0%); border-radius: 8px; background: linear-gradient(90deg, $red, #ff8a00, $yellow); transition: width 1s linear; position: relative; }
-    // Moving shimmer while cooking
-    i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent); animation: shimmer 1.6s linear infinite; }
+    // scaleX driven by --fill (0–1): compositor only
+    i { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, $red, #ff8a00, $gold); transform: scaleX(var(--fill, 0)); transform-origin: left; transition: transform 1s linear; }
   }
-  ol { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 16px; }
+  ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 14px; }
   li {
     display: grid; justify-items: center; gap: 8px; text-align: center;
-    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4);
-    span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); font-size: 0.82rem; transition: background 0.4s, transform 0.5s $ease-back; .ic { width: 16px; height: 16px; stroke-width: 3; } }
+    font-size: 0.64rem; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4);
+    span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); font-size: 0.82rem; transition: transform 0.4s $ease-back; .ic { width: 16px; height: 16px; stroke-width: 3; } }
     &.is-done { color: rgba(255, 255, 255, 0.8); span { background: $green; color: #fff; } }
-    &.is-on { color: #fff; span { background: $yellow; color: $ink; transform: scale(1.2); box-shadow: 0 0 0 6px rgba($yellow, 0.25); } }
+    &.is-on { color: #fff; span { background: $gold; color: $ink; transform: scale(1.18); } }
+    @include up($bp-sm) { font-size: 0.72rem; }
   }
 }
-@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+// "Send on WhatsApp" reminder under the ticket
+.sendbox {
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: $radius;
+  background: #fff;
+  box-shadow: $shadow-sm;
+  border-left: 5px solid $wa;
+  p { color: $muted; font-size: 0.9rem; }
+  &__acts { display: flex; flex-wrap: wrap; gap: 10px; .btn { flex: 1 1 160px; } }
+}
 
 .receipt {
   width: min(360px, 100%);
-  padding: 30px 24px 34px;
+  padding: 30px 22px 34px;
   background: #fffdf7;
   color: $ink;
   font-family: $font-mono;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   line-height: 1.5;
-  box-shadow: $shadow;
   position: relative;
+  filter: drop-shadow(0 12px 22px rgba(20, 16, 13, 0.18));
   // Zig-zag torn edges, top and bottom
   --zig: 10px;
   mask:
     conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--zig) 51% repeat-x,
     conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zig) 51% repeat-x;
-  animation: print 1.1s $ease-out 0.2s both;
-  transform-origin: top;
 
-  &__brand { font-family: $font-display; font-size: 2.4rem; text-align: center; line-height: 1; letter-spacing: 0.04em; }
+  &__brand { font-family: $font-display; font-size: 2rem; text-align: center; line-height: 1; letter-spacing: 0.04em; }
   &__c { text-align: center; color: $muted; margin-top: 6px; }
   &__rule { border-top: 1.5px dashed #b9b0a4; margin: 12px 0; }
   &__row { display: flex; justify-content: space-between; gap: 12px; span:last-child, b:last-child { text-align: right; }
     &--item { font-weight: 700; margin-top: 6px; }
     &--total { font-size: 1.2rem; font-weight: 700; margin: 8px 0 4px; } }
-  &__opt { color: $muted; padding-left: 14px; font-size: 0.74rem; }
+  &__opt { color: $muted; padding-left: 14px; font-size: 0.72rem; overflow-wrap: anywhere; }
   &__qr { width: 150px; margin: 6px auto 0; svg { display: block; width: 100%; height: auto; } }
   &__code { display: block; font-size: 1.7rem; letter-spacing: 0.24em; color: $ink; margin-top: 2px; }
   &__thanks { color: $ink; font-weight: 700; margin-top: 12px; }
-  &__demo { font-size: 0.68rem; }
+  &__demo { font-size: 0.66rem; }
 }
-@keyframes print { from { clip-path: inset(0 0 100% 0); transform: translateY(-20px); } to { clip-path: inset(0 0 0 0); transform: none; } }
 
 // ---------- Printing: only the receipt ----------
 @media print {
@@ -266,7 +273,7 @@
   .receipt, .receipt * { visibility: visible !important; }
   .receipt {
     position: absolute !important; left: 50%; top: 0; transform: translateX(-50%) !important;
-    box-shadow: none; mask: none; animation: none; clip-path: none !important; width: 80mm;
+    filter: none; mask: none; animation: none; width: 80mm;
   }
-  .site-header, .tabbar, .site-footer, .cart-pill, .loader, .curtain, .toasts { display: none !important; }
+  .site-header, .tabbar, .site-footer, .cart-pill, .loader, .wipe, .toasts, .progress { display: none !important; }
 }

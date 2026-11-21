@@ -1,7 +1,7 @@
 {
-  "name": "kot-nou",
+  "name": "webluxe-foods",
   "version": "2.0.0",
-  "description": "Kot Nou — Mauritian street kitchen. Static Q-Skip takeaway ordering site (SCSS + canvas, no backend).",
+  "description": "WebLuxe Foods — Mauritian street kitchen. Static Q-Skip takeaway ordering site (SCSS + canvas, no backend).",
   "private": true,
   "scripts": {
     "build": "sass scss/main.scss css/main.css --style=compressed --no-source-map",

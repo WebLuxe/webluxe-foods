@@ -1,20 +1,20 @@
-@use 'sass:list';
-// Design tokens — Mauritian flag palette on warm ink and cream.
+// Design tokens — WebLuxe Foods: warm ink, cream, chilli red and saffron gold.
 $red: #e4002b;
 $red-dark: #b80022;
+$gold: #ffb81c;
+$gold-deep: #c98200;
 $blue: #1b2a8f;
-$yellow: #ffd200;
 $green: #00a04a;
-$flag: $red, $blue, $yellow, $green;
+$wa: #128c4a;
 
-$ink: #15110e;
+$ink: #14100d;
 $ink-2: #221b16;
-$ink-3: #33291f;
+$ink-3: #3a2f25;
 $cream: #fbf5e9;
 $cream-2: #f3e9d6;
 $paper: #ffffff;
 $muted: #776b5e;
-$line: rgba(21, 17, 14, 0.1);
+$line: rgba(20, 16, 13, 0.1);
 
 $font-display: 'Anton', 'Impact', 'Haettenschweiler', sans-serif;
 $font-body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -25,12 +25,12 @@ $ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 $ease-io: cubic-bezier(0.76, 0, 0.24, 1);
 $ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-$header-h: 72px;
-$tabbar-h: 64px;
+$header-h: 68px;
+$tabbar-h: 62px;
 $radius: 22px;
 $radius-sm: 14px;
-$shadow: 0 18px 50px -18px rgba(21, 17, 14, 0.35);
-$shadow-sm: 0 6px 20px -8px rgba(21, 17, 14, 0.25);
+$shadow: 0 18px 44px -20px rgba(20, 16, 13, 0.4);
+$shadow-sm: 0 6px 18px -10px rgba(20, 16, 13, 0.3);
 
 $bp-sm: 560px;
 $bp-md: 820px;
@@ -41,6 +41,15 @@ $bp-lg: 1100px;
 }
 @mixin down($bp) {
   @media (max-width: ($bp - 0.02px)) { @content; }
+}
+// Hover styles only where there is a real pointer, so phones never get "stuck" hover states.
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { @content; }
+  }
+}
+@mixin fine {
+  @media (hover: hover) and (pointer: fine) { @content; }
 }
 @mixin display($size) {
   font-family: $font-display;
@@ -54,12 +63,5 @@ $bp-lg: 1100px;
   &:focus-visible {
     outline: 3px solid $color;
     outline-offset: 3px;
-  }
-}
-// Four slanted flag stripes: the brand motif.
-@mixin flag-children {
-  @each $c in $flag {
-    $n: list.index($flag, $c);
-    > i:nth-child(#{$n}) { background: $c; }
   }
 }
