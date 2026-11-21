@@ -18,7 +18,7 @@ function boot() {
   try {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !LOW, powerPreference: 'high-performance' });
   } catch (e) { return null; }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LOW ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LOW ? 1.25 : 2));
   renderer.setClearColor(0x000000, 0);
   renderer.autoClear = false;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -72,6 +72,19 @@ function boot() {
   const coverScene = new THREE.Scene();
   coverScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), coverMat));
   const coverCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  /* The fire/ink/burn layer is all soft noise, so it is drawn into a smaller buffer and stretched up: on a
+     mid-range phone that is the difference between ~40 fps and a steady 60. The 3D food stays full sharpness. */
+  const COVER_SCALE = (LOW ? 0.6 : 1);
+  const coverRT = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+  const blitScene = new THREE.Scene();
+  blitScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    uniforms: { t: { value: coverRT.texture } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+    fragmentShader: 'precision mediump float; varying vec2 vUv; uniform sampler2D t; void main(){ gl_FragColor = texture2D(t, vUv); }',
+    // the buffer already holds premultiplied colour
+    transparent: true, depthTest: false, depthWrite: false, blending: THREE.CustomBlending,
+    blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor,
+  })));
 
   /* ------------------------------------------------------------ 3D ingredients */
   const scene = new THREE.Scene();
@@ -130,14 +143,14 @@ function boot() {
 
   const std = (o) => new THREE.MeshStandardMaterial(o);
   const TYPES = [
-    { g: chilliG, m: new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.15 }), w: 3.4, s: [0.85, 1.2] },
+    { g: chilliG, m: std({ vertexColors: true, roughness: 0.2, metalness: 0.08 }), w: 3.4, s: [0.85, 1.2] },
     { g: leafG, m: std({ color: 0x2b7a1f, roughness: 0.5, side: THREE.DoubleSide }), w: 3, s: [0.5, 0.8] },
     { g: anisG, m: std({ color: 0x6e2c12, roughness: 0.7 }), w: 1.6, s: [0.8, 1.1] },
     { g: pepG, m: std({ color: 0x2a1a12, roughness: 0.85 }), w: 5, s: [0.8, 1.4] },
     { g: cinnG, m: std({ color: 0x8f4b23, roughness: 0.75, side: THREE.DoubleSide }), w: 1.2, s: [0.8, 1.1] },
     { g: limeG, m: std({ vertexColors: true, roughness: 0.4 }), w: 1, s: [0.8, 1.05] },
   ];
-  const CAP = LOW ? 150 : 260;
+  const CAP = LOW ? 120 : 260;
   const wsum = TYPES.reduce((s, t) => s + t.w, 0);
   const ZERO = new THREE.Matrix4().makeScale(0, 0, 0);
   TYPES.forEach((t) => {
@@ -225,7 +238,9 @@ function boot() {
     // keep the toss framed on tall phones: widen the vertical field a little
     cam.fov = w / h < 0.7 ? 52 : 40;
     cam.updateProjectionMatrix();
-    U.uRes.value.set(w * renderer.getPixelRatio(), h * renderer.getPixelRatio());
+    const cw = Math.max(1, Math.round(w * COVER_SCALE)), ch = Math.max(1, Math.round(h * COVER_SCALE));
+    coverRT.setSize(cw, ch);
+    U.uRes.value.set(cw, ch);
   }
   addEventListener('resize', resize);
   resize();
@@ -288,7 +303,10 @@ function boot() {
     sparkGeo.attributes.color.needsUpdate = true;
 
     renderer.clear();
-    if (U.uShow.value > 0 || U.uEdge.value > 0) renderer.render(coverScene, coverCam);
+    if (U.uShow.value > 0 || U.uEdge.value > 0) {
+      renderer.setRenderTarget(coverRT); renderer.clear(); renderer.render(coverScene, coverCam);
+      renderer.setRenderTarget(null); renderer.render(blitScene, coverCam);
+    }
     renderer.clearDepth();
     renderer.render(scene, cam);
 
@@ -311,17 +329,31 @@ function boot() {
     canvas.classList.remove('is-on');
   }
 
+  /* Compile every shader up front (in parallel where the GPU driver allows it), so the first frame of fire
+     doesn't freeze the page while programs build. */
+  const warm = (async () => {
+    try {
+      if (renderer.compileAsync) { await renderer.compileAsync(coverScene, coverCam); await renderer.compileAsync(blitScene, coverCam); await renderer.compileAsync(scene, cam); }
+      else { renderer.compile(coverScene, coverCam); renderer.compile(blitScene, coverCam); renderer.compile(scene, cam); }
+      // one throwaway draw uploads the geometry and textures too
+      renderer.setRenderTarget(coverRT); renderer.render(coverScene, coverCam); renderer.setRenderTarget(null);
+      renderer.clear(); renderer.render(blitScene, coverCam); renderer.render(scene, cam); renderer.clear();
+    } catch (e) { /* fine: it will compile on first use */ }
+  })();
+
   /* ------------------------------------------------------------ public API */
   let introT0 = 0, gen = 0;
   const API = {
+    warm,
     /* Fire up and throw the first toss. The cover is solid until exit(). */
-    introStart() {
+    async introStart() {
+      await warm;
       U.uInv.value = 0; U.uR.value = 0; U.uEdge.value = 0; U.uShow.value = 1;
       cam.position.z = 7;
       hold = true; start();
       introT0 = clock;
       tween((v) => { fire = v; }, 0, 1, 0.9, 'out');
-      if (!REDUCED) { toss(LOW ? 70 : 120, 0.3, 0.8); toss(LOW ? 30 : 60, 1.5, 0.9); }
+      if (!REDUCED) { toss(LOW ? 60 : 120, 0.3, 0.8); toss(LOW ? 26 : 60, 1.5, 0.9); }
       // a first frame is on screen after one rAF: the CSS veil can go
       return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     },
@@ -370,6 +402,8 @@ function boot() {
       const g = gen;
       U.uInv.value = 0; U.uShow.value = 1;
       U.uO.value.set(0.5, 0.35);
+      // fling what's left toward the lens so nothing is lying over the new page once it's readable
+      for (const it of items) { it.v.z += 7 + Math.random() * 6; it.v.y += 2; it.spin *= 1.5; }
       tween((v) => { U.uEdge.value = v; }, 0, 1, 0.12, 'out');
       await tween((v) => { U.uR.value = v; }, 0, maxR(), 0.72, 'in');
       if (g !== gen) return;

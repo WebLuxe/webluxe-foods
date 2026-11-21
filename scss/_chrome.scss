@@ -353,6 +353,13 @@ body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
 }
 // The pill would cover the checkout or the ticket, so tuck it away there.
 body[data-view='order'] .cart-pill, body:has(dialog[open]) .cart-pill { transform: translate3d(-50%, 150%, 0); }
+// Phones: the tab bar's Cart tab already shows the count, so the floating bar only appears on the menu (where you
+// are adding things) instead of sitting on top of hero buttons and cards everywhere else. The menu gets extra room
+// at the bottom so the last dishes can scroll clear of it.
+@include down($bp-md) {
+  body:not([data-view='menu']) .cart-pill { transform: translate3d(-50%, 150%, 0); }
+  body[data-view='menu'] .menu-body { padding-bottom: 76px; }
+}
 
 // ---------- Page heads (non-home views) ----------
 .page-head {

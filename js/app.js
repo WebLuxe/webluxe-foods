@@ -10,7 +10,7 @@
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const rs = (n) => 'Rs ' + Math.round(n).toLocaleString('en-US');
+  const rs = (n) => 'Rs ' + Math.round(n).toLocaleString('en-US');   // no-break space: "Rs 50" never splits
   const byId = (id) => ITEMS.find((i) => i.id === id);
   const pad = (n, l = 2) => String(n).padStart(l, '0');
   const hm = (mins) => `${pad(Math.floor(mins / 60))}:${pad(mins % 60)}`;
@@ -289,9 +289,10 @@
 
   /* -------------------------------------------------------------------- HOME */
   const HERO = [
-    { img: 'hero-mine', kicker: 'Lakwizinn morisien · Grand Baie', lines: ['Mine Frite.', 'Zero Queue.'] },
-    { img: 'hero-kari', kicker: 'Slow-cooked kari, every morning', lines: ['Real', 'Kari.'] },
-    { img: 'hero-spice', kicker: 'Order ahead with Q-Skip', lines: ['Skip the', 'Line.'] },
+    // `pos` keeps the food in the top half of a tall phone screen, above the headline
+    { img: 'hero-kari', pos: '50% 0%', kicker: 'Lakwizinn morisien · Grand Baie', lines: ['Real Kari.', 'Zero Queue.'] },
+    { img: 'hero-mine', pos: '20% 100%', kicker: 'Tossed over a roaring flame', lines: ['Mine', 'Frite.'] },
+    { img: 'hero-spice', pos: '50% 20%', kicker: 'Order ahead with Q-Skip', lines: ['Skip the', 'Line.'] },
   ];
   const titleHtml = (lines) => lines.map((l, n) => `<span class="line"><span style="--d:${n}">${l}</span></span>`).join('');
 
@@ -300,7 +301,7 @@
     return `
     <section class="hero" id="hero">
       <div class="hero__slides" id="heroSlides">
-        ${HERO.map((s, n) => `<div class="hero__slide${n === 0 ? ' is-on' : ''}">${pic(s.img, '', '100vw', { wide: true, eager: n === 0 })}</div>`).join('')}
+        ${HERO.map((s, n) => `<div class="hero__slide${n === 0 ? ' is-on' : ''}" style="--pos:${s.pos}">${pic(s.img, '', '100vw', { wide: true, eager: n === 0 })}</div>`).join('')}
       </div>
       <canvas class="hero__fx" id="heroFx" aria-hidden="true"></canvas>
       <div class="hero__inner wrap">
@@ -1381,7 +1382,7 @@
     requestAnimationFrame(() => intro.classList.add('is-lit'));
 
     const small = window.FX.SMALL;
-    const assets = [`hero-mine${small ? '-sm' : ''}`, 'mine-frite-sm', 'dholl-puri-sm', 'gato-pima-sm'];
+    const assets = [`hero-kari${small ? '-sm' : ''}`, 'mine-frite-sm', 'dholl-puri-sm', 'gato-pima-sm'];
     const total = assets.length + 2;
     let done = 0, shown = 0;
     const step = () => {
