@@ -8,9 +8,12 @@ Orders are sent to the restaurant as a ready-written **WhatsApp message**.
 
 ## What's in it
 
-- **Intro**: a canvas particle animation that assembles the wordmark, with a 3D gold medallion
-  (rendered in Blender, played as a 40-frame sprite).
-- **Tab transitions**: ink floods out from the point you tapped, the medallion spins, the new page rises in.
+- **Intro** (three.js, `js/stage.js`): the wordmark punches in, a wok fire lights up the bottom of the screen
+  and real 3D ingredients (chillies, coriander, star anise, peppercorns, cinnamon, lime) are tossed into the
+  air. Time slows at the top of the toss, the camera pushes through and the screen burns away onto the site.
+  Tap to skip.
+- **Tab transitions**: the ink burns in from where you tapped (a few ingredients fly off your finger), the
+  page name slams in, and the ink burns away onto the new page. Without WebGL it falls back to a circular wipe.
 - **Home**: hero slider with a canvas ember effect and parallax, dish ticker, bestseller rail,
   menu category tiles, "how Q-Skip works" and a story block with animated counters.
 - **Menu**: seven menus (Starters, Street Classics, Noodles & Rice, Curries & Mains, Burgers & Sides,

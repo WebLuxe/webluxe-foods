@@ -14,7 +14,9 @@
 
   &__in { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
   &__head { display: flex; align-items: center; gap: 12px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; border-bottom: 1px solid $line; }
-  &__view { overflow: hidden; }
+  // `clip`, not `hidden`: a hidden box can still be scrolled sideways by the browser when a field in another
+  // step gets focus, which shoved the order list off screen. A clipped box cannot scroll at all.
+  &__view { overflow: hidden; overflow: clip; }
   &__track { display: flex; height: 100%; transition: transform 0.5s $ease-io; will-change: transform; }
   &__step {
     flex: none; width: 100%; height: 100%;

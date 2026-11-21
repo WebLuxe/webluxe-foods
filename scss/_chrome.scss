@@ -1,105 +1,197 @@
 @use 'tokens' as *;
 
-// ---------- Intro: particle wordmark + medallion ----------
-.loader {
-  // Matches the wordmark size computed in fx.js so the medallion and bar sit just above and below it.
-  --big: min(20.5vw, 20vh, 220px);
+// ---------- WebGL stage (intro fire + burn transitions) ----------
+.stage {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1000;
-  background: radial-gradient(120% 90% at 50% 45%, #2a1c12 0%, $ink 60%);
-  color: #fff;
-  transition: opacity 0.7s ease, transform 0.9s $ease-out;
+  pointer-events: none;
+  display: none;
+  &.is-on { display: block; }
+}
+// While a transition runs, swallow taps so nothing underneath gets clicked half-way through.
+body.is-moving::after { content: ''; position: fixed; inset: 0; z-index: 1002; }
 
-  &__fx { position: absolute; inset: 0; width: 100%; height: 100%; }
-  &__top {
-    position: absolute;
-    left: 50%;
-    top: calc(50% - var(--big) * 0.62 - 14px);
-    transform: translate(-50%, -100%);
-    animation: drop-in 0.9s $ease-out both;
+// Solid ink before the first WebGL frame; also the no-WebGL fallback (a circular wipe).
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: radial-gradient(110% 70% at 50% 75%, #2b190e 0%, $ink 62%);
+  pointer-events: none;
+  &.is-gone { display: none; }
+  &.is-cover { display: block; animation: veil-in 0.52s $ease-io both; }
+  &.is-reveal { animation: veil-out 0.56s $ease-io both; }
+}
+@keyframes veil-in { from { clip-path: circle(0 at var(--x, 50%) var(--y, 50%)); } to { clip-path: circle(150vmax at var(--x, 50%) var(--y, 50%)); } }
+@keyframes veil-out { from { clip-path: circle(150vmax at 50% 60%); } to { clip-path: circle(0 at 50% 60%); } }
+
+// ---------- Intro wordmark ----------
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  padding: 0 16px 14vh;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &__tag {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    i { width: 26px; height: 1.5px; background: $gold; transform: scaleX(0); transition: transform 0.8s $ease-out 0.5s; }
+    span { opacity: 0; transform: translate3d(0, 10px, 0); transition: opacity 0.6s, transform 0.8s $ease-out; }
+    span:first-child { transition-delay: 0.35s; }
+    span:last-child { transition-delay: 0.45s; }
   }
-  &__bottom {
-    position: absolute;
-    left: 50%;
-    top: calc(50% + var(--big) * 1.2 + 18px);
-    transform: translateX(-50%);
+  &__word {
+    @include display(min(25vw, 220px));
+    line-height: 0.84;
     display: grid;
     justify-items: center;
-    gap: 12px;
-    width: min(300px, 70vw);
-    text-align: center;
+    b { display: inline-block; font-weight: 400; }
   }
-  &__msg { font-family: $font-script; font-size: 1.45rem; color: $gold; min-height: 1.4em; }
-  &__bar {
-    width: 100%;
-    height: 3px;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.14);
-    overflow: hidden;
-    i { display: block; height: 100%; background: linear-gradient(90deg, $red, $gold); transform: scaleX(0); transform-origin: left; transition: transform 0.5s $ease-out; }
+  // Each letter sits in a clipped row and punches up into place
+  &__w1, &__w2 { display: flex; overflow: hidden; padding: 0.04em 0.02em 0; }
+  &__w1 b {
+    transform: translate3d(0, 108%, 0) rotate(8deg);
+    transition: transform 0.9s cubic-bezier(0.2, 1.3, 0.3, 1);
+    transition-delay: calc(var(--n) * 45ms + 0.15s);
   }
-  &__pct { font-family: $font-display; font-size: 1.1rem; letter-spacing: 0.1em; opacity: 0.7; }
-
-  &.is-done {
-    opacity: 0;
-    transform: scale(1.08);
-    pointer-events: none;
-    .loader__top, .loader__bottom { transition: opacity 0.25s; opacity: 0; }
+  &__w2 {
+    color: $gold;
+    font-size: 0.56em;
+    letter-spacing: 0.32em;
+    margin-right: -0.32em;
+    b { opacity: 0; transform: translate3d(0, 0, 0) scale(1.6); filter: blur(6px); transition: opacity 0.5s, transform 0.9s $ease-out, filter 0.6s; transition-delay: calc(var(--n) * 60ms + 0.55s); }
   }
-}
-@keyframes drop-in { from { opacity: 0; transform: translate(-50%, -160%) scale(0.6); } }
-
-// ---------- Tab transition: ink floods from the tap point ----------
-.wipe {
-  position: fixed;
-  inset: 0;
-  z-index: 900;
-  overflow: hidden;
-  pointer-events: none;
-  visibility: hidden;
-  contain: strict;
-
-  i {
-    position: absolute;
-    left: calc(var(--x, 50vw) - var(--r, 100vmax));
-    top: calc(var(--y, 50vh) - var(--r, 100vmax));
-    width: calc(var(--r, 100vmax) * 2);
-    height: calc(var(--r, 100vmax) * 2);
-    border-radius: 50%;
-    transform: scale(0);
-  }
-  &__a { background: $gold; }
-  &__b { background: $ink; }
-  .coin {
-    --s: 96px;
+  &__load {
     position: absolute;
     left: 50%;
-    top: 50%;
-    margin: -48px 0 0 -48px;
+    bottom: calc(34px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-family: $font-script;
+    font-size: 1.35rem;
+    color: $gold;
+    white-space: nowrap;
     opacity: 0;
-    animation-duration: 0.9s;
+    transition: opacity 0.6s 0.7s;
+    b { font-family: $font-mono; font-size: 0.8rem; font-weight: 700; color: rgba(255, 255, 255, 0.75); letter-spacing: 0.1em; min-width: 3ch; }
+    b::after { content: '%'; opacity: 0.5; }
+  }
+  &__skip {
+    position: absolute;
+    top: calc(22px + env(safe-area-inset-top));
+    right: 20px;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    opacity: 0;
+    transition: opacity 0.6s 1.4s;
   }
 
-  &.is-in {
-    visibility: visible;
-    pointer-events: auto;
-    .wipe__a { animation: wipe-grow 0.5s $ease-io both; }
-    .wipe__b { animation: wipe-grow 0.5s $ease-io 0.07s both; }
-    .coin { animation: coin-spin 0.9s steps(40, jump-none) infinite, wipe-coin 0.3s $ease-back 0.22s both; }
+  &.is-lit {
+    .intro__tag span { opacity: 1; transform: none; }
+    .intro__tag i { transform: scaleX(1); }
+    .intro__w1 b { transform: none; }
+    .intro__w2 b { opacity: 1; transform: none; filter: none; }
+    .intro__load, .intro__skip { opacity: 1; }
   }
+  // Exit: letters are flung upward and the furniture fades as the burn starts
   &.is-out {
-    visibility: visible;
-    animation: wipe-fade 0.45s ease both;
-    .wipe__a { display: none; }
-    .wipe__b { transform: scale(1); }
-    .coin { opacity: 1; animation: coin-spin 0.9s steps(40, jump-none) infinite; }
+    pointer-events: none;
+    .intro__w1 b { transform: translate3d(0, -115%, 0) rotate(-6deg); transition: transform 0.55s cubic-bezier(0.7, 0, 0.84, 0); transition-delay: calc(var(--n) * 25ms); }
+    .intro__w2 b { opacity: 0; transform: translate3d(0, -40%, 0); transition: opacity 0.35s, transform 0.5s $ease-io; transition-delay: calc(var(--n) * 25ms + 0.05s); }
+    .intro__tag, .intro__load, .intro__skip { opacity: 0; transition: opacity 0.25s; transition-delay: 0s; }
   }
 }
-@keyframes wipe-grow { from { transform: scale(0); } to { transform: scale(1); } }
-@keyframes wipe-coin { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
-@keyframes wipe-fade { to { opacity: 0; } }
-@keyframes coin-spin { to { background-position: 100% 0; } }
+@for $i from 1 through 7 { .intro__w1 b:nth-child(#{$i}), .intro__w2 b:nth-child(#{$i}) { --n: #{$i - 1}; } }
+
+// ---------- Page name during a tab transition ----------
+.pt {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 4px;
+  padding: 0 20px;
+  text-align: center;
+  color: #fff;
+  pointer-events: none;
+  visibility: hidden;
+  &__sub {
+    font-family: $font-script;
+    font-style: normal;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: $gold;
+    transform: rotate(-4deg);
+    opacity: 0;
+  }
+  &__name {
+    @include display(clamp(3.4rem, 15vw, 9rem));
+    font-weight: 400;
+    line-height: 0.9;
+    > span { display: inline-block; overflow: hidden; padding-top: 0.06em; vertical-align: top; }
+    > span > span { display: inline-block; transform: translate3d(0, 110%, 0); }
+  }
+  &.is-in, &.is-out { visibility: visible; }
+  &.is-in {
+    .pt__sub { animation: pt-sub 0.5s $ease-out 0.36s both; }
+    .pt__name > span > span { animation: pt-up 0.6s cubic-bezier(0.2, 1.25, 0.3, 1) both; animation-delay: calc(var(--d) * 70ms + 0.3s); }
+  }
+  &.is-out {
+    .pt__sub { opacity: 1; animation: pt-fade 0.3s ease both; }
+    .pt__name > span > span { transform: none; animation: pt-away 0.45s cubic-bezier(0.7, 0, 0.84, 0) both; animation-delay: calc(var(--d) * 50ms); }
+  }
+}
+@keyframes pt-up { from { transform: translate3d(0, 110%, 0) rotate(6deg); } to { transform: none; } }
+@keyframes pt-away { to { transform: translate3d(0, -112%, 0) rotate(-4deg); } }
+@keyframes pt-sub { from { opacity: 0; transform: translate3d(0, 14px, 0) rotate(-4deg); } to { opacity: 1; transform: rotate(-4deg); } }
+@keyframes pt-fade { to { opacity: 0; } }
+
+// "Sending to the kitchen" spinner: the flame mark inside a turning saffron ring
+.flame-spin {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 0 30%, $red 60%, $gold 100%);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+    animation: spin 0.9s linear infinite;
+  }
+  img { width: 50px; height: 50px; animation: flicker 1.2s ease-in-out infinite alternate; }
+}
+@keyframes spin { to { transform: rotate(1turn); } }
+@keyframes flicker { from { transform: scale(0.94); } to { transform: scale(1.04) translate3d(0, -2px, 0); } }
 
 // ---------- Header ----------
 .site-header {

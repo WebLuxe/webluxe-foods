@@ -6,29 +6,35 @@
   <meta name="theme-color" content="#14100d">
   <title>WebLuxe Foods — Mauritian Street Kitchen · Q-Skip Takeaway</title>
   <meta name="description" content="Mine frite, dholl puri, briani and more. Order ahead with Q-Skip, skip the queue and collect your Mauritian takeaway hot.">
+  <link rel="icon" type="image/svg+xml" href="img/mark.svg">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="apple-touch-icon" href="img/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="img/coin-spin.webp" type="image/webp">
+  <link rel="modulepreload" href="js/vendor/three.module.min.js">
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body data-view="home" class="is-loading">
 
-  <!-- Intro: particle wordmark (canvas) + spinning 3D medallion -->
-  <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading WebLuxe Foods">
-    <canvas class="loader__fx" id="loaderFx" aria-hidden="true"></canvas>
-    <div class="loader__top"><div class="coin coin--xl" aria-hidden="true"></div></div>
-    <div class="loader__bottom">
-      <p class="loader__msg" id="loaderMsg">Pe sof lapoel…</p>
-      <div class="loader__bar"><i id="loaderBar"></i></div>
-      <div class="loader__pct"><span id="loaderPct">0</span>%</div>
-    </div>
+  <!-- Solid ink until the WebGL stage draws its first frame (and the fallback if WebGL is unavailable) -->
+  <div class="veil" id="veil" aria-hidden="true"></div>
+  <!-- WebGL stage: wok-fire intro and the burn transitions between tabs -->
+  <canvas class="stage" id="stage" aria-hidden="true"></canvas>
+
+  <!-- Intro wordmark (sits above the stage) -->
+  <div class="intro" id="intro" role="status" aria-live="polite" aria-label="Loading WebLuxe Foods">
+    <p class="intro__tag"><span>Lakwizinn lari</span><i></i><span>Grand Baie · Moris</span></p>
+    <h1 class="intro__word" aria-label="WebLuxe Foods">
+      <span class="intro__w1" aria-hidden="true"><b>W</b><b>E</b><b>B</b><b>L</b><b>U</b><b>X</b><b>E</b></span>
+      <span class="intro__w2" aria-hidden="true"><b>F</b><b>O</b><b>O</b><b>D</b><b>S</b></span>
+    </h1>
+    <div class="intro__load"><span id="introMsg">Pe lalim dife…</span><b id="introPct">00</b></div>
+    <span class="intro__skip" aria-hidden="true">Tap to skip</span>
   </div>
 
-  <!-- Tab transition: ink expands from where you tapped -->
-  <div class="wipe" id="wipe" aria-hidden="true"><i class="wipe__a"></i><i class="wipe__b"></i><div class="coin"></div></div>
+  <!-- Tab transition label -->
+  <div class="pt" id="pt" aria-hidden="true"><em class="pt__sub" id="ptSub"></em><b class="pt__name" id="ptName"></b></div>
 
   <div class="progress" id="progress" aria-hidden="true"></div>
   <header class="site-header" id="header"></header>
@@ -43,7 +49,7 @@
 
   <div class="overlay" id="overlay" hidden>
     <div class="overlay__box">
-      <div class="coin coin--lg" aria-hidden="true"></div>
+      <div class="flame-spin" aria-hidden="true"><img src="img/mark.svg" alt="" width="56" height="56"></div>
       <h3 id="ovTitle">Sending to the kitchen…</h3>
       <p id="ovMsg">Hold tight, we're printing your ticket.</p>
     </div>
@@ -57,6 +63,7 @@
   <script src="js/vendor/qrcode.js"></script>
   <script src="js/data.js"></script>
   <script src="js/fx.js"></script>
+  <script type="module" src="js/stage.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

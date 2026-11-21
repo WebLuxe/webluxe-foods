@@ -86,23 +86,21 @@
       &.is-on i::after { animation: dot-fill 6.5s linear both; }
     }
   }
-  // Medallion badge, bottom right (larger screens)
+  // Turning text ring with the flame mark (larger screens)
   &__badge {
     display: none;
     position: absolute;
     z-index: 6;
     right: clamp(24px, 6vw, 90px);
     bottom: clamp(70px, 14vh, 130px);
-    align-items: center;
-    gap: 14px;
-    padding: 12px 22px 12px 12px;
-    border-radius: 999px;
-    background: rgba($ink, 0.72);
-    box-shadow: inset 0 0 0 1.5px rgba($gold, 0.5);
+    width: 150px;
+    height: 150px;
+    place-items: center;
     animation: rise 0.9s $ease-out 0.8s both;
-    .coin { --s: 72px; }
-    span { @include display(1.35rem); color: $gold; line-height: 1; }
-    @include up($bp-lg) { display: flex; }
+    svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 18s linear infinite; overflow: visible; }
+    text { font-family: $font-body; font-weight: 800; font-size: 10.4px; letter-spacing: 0.18em; fill: $gold; }
+    img { width: 52px; height: 52px; }
+    @include up($bp-lg) { display: grid; }
   }
 }
 .is-loading .hero {

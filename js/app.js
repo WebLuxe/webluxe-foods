@@ -70,7 +70,7 @@
     star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
   };
   const ic = (name) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`;
-  const LOGO = '<img class="logo__mark" src="img/coin.webp" alt="" width="40" height="40"><span class="logo__text">WebLuxe<em>Foods</em></span>';
+  const LOGO = '<img class="logo__mark" src="img/mark.svg" alt="" width="40" height="40"><span class="logo__text">WebLuxe<em>Foods</em></span>';
 
   /* Responsive WebP: a small file for phones/cards, a larger one for big slots. */
   function pic(name, alt, sizes, opt = {}) {
@@ -138,7 +138,14 @@
     setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 320); }, 2600);
   }
 
-  function openDialog(d) { if (!d.open) { d.classList.remove('closing'); d.style.transform = ''; d.showModal(); } }
+  /* Blur first: when a dialog closes the browser hands focus back to whatever had it and scrolls that into
+     view, which made the page jump under the sheet. With nothing focused there is nothing to scroll to. */
+  function openDialog(d) {
+    if (d.open) return;
+    document.activeElement?.blur?.();
+    d.classList.remove('closing'); d.style.transform = '';
+    d.showModal();
+  }
   async function closeDialog(d) {
     if (!d.open || d.classList.contains('closing')) return;
     d.classList.add('closing');
@@ -282,9 +289,9 @@
 
   /* -------------------------------------------------------------------- HOME */
   const HERO = [
-    { img: 'hero-wok', kicker: 'Lakwizinn morisien · Grand Baie', lines: ['Mine Frite.', 'Zero Queue.'] },
-    { img: 'hero-lagoon', kicker: 'From our island to your hands', lines: ['Island', 'Flavour.'] },
-    { img: 'hero-palms', kicker: 'Order ahead with Q-Skip', lines: ['Skip the', 'Line.'] },
+    { img: 'hero-mine', kicker: 'Lakwizinn morisien · Grand Baie', lines: ['Mine Frite.', 'Zero Queue.'] },
+    { img: 'hero-kari', kicker: 'Slow-cooked kari, every morning', lines: ['Real', 'Kari.'] },
+    { img: 'hero-spice', kicker: 'Order ahead with Q-Skip', lines: ['Skip the', 'Line.'] },
   ];
   const titleHtml = (lines) => lines.map((l, n) => `<span class="line"><span style="--d:${n}">${l}</span></span>`).join('');
 
@@ -306,7 +313,11 @@
         </div>
       </div>
       <div class="hero__dots" id="heroDots">${HERO.map((_, n) => `<button class="${n === 0 ? 'is-on' : ''}" data-action="hero-go" data-n="${n}" aria-label="Slide ${n + 1}"><i></i></button>`).join('')}</div>
-      <div class="hero__badge" aria-hidden="true"><div class="coin"></div><span>Skip<br>the queue</span></div>
+      <div class="hero__badge" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><defs><path id="ring" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs>
+          <text><textPath href="#ring">ORDER AHEAD · SKIP THE QUEUE · Q-SKIP · </textPath></text></svg>
+        <img src="img/mark.svg" alt="" width="44" height="44">
+      </div>
     </section>
 
     <div class="ticker" aria-hidden="true"><div class="ticker__track">
@@ -1170,7 +1181,32 @@
     onScroll();
   }
 
-  /* Tab transition: ink floods out from the point you tapped, the medallion spins, then the new page rises in. */
+  /* Without WebGL (or before it has loaded) the veil does a plain circular wipe instead of the burn. */
+  const VEIL = {
+    async cover(x, y) {
+      const v = $('#veil');
+      v.style.setProperty('--x', x + 'px'); v.style.setProperty('--y', y + 'px');
+      v.className = 'veil is-cover';
+      await wait(520);
+    },
+    async reveal() { const v = $('#veil'); v.className = 'veil is-reveal'; await wait(560); v.className = 'veil is-gone'; },
+  };
+  const stage = () => window.STAGE || VEIL;
+
+  const PAGE_LABEL = {
+    home: ['Byenvini', 'WebLuxe Foods'], menu: ['Nou meni', 'The Menu'], orders: ['Ou komand', 'My Orders'],
+    order: ['Ou tiket', 'Your Ticket'], about: ['Vinn get nou', 'Find Us'],
+  };
+  function showLabel(view) {
+    const [sub, name] = PAGE_LABEL[view] || PAGE_LABEL.home;
+    $('#ptSub').textContent = sub;
+    $('#ptName').innerHTML = name.split(' ').map((w, n) => `<span><span style="--d:${n}">${esc(w)}</span></span>`).join(' ');
+    const pt = $('#pt');
+    pt.className = 'pt'; void pt.offsetWidth; pt.className = 'pt is-in';
+  }
+
+  /* Tab transition: the ink burns in from where you tapped (throwing a few ingredients), the page name
+     slams in, the new page is drawn underneath, and the ink burns away onto it. */
   async function navigate(first = false) {
     const r = parseHash();
     if (!first && r.view === 'menu' && S.view === 'menu') {
@@ -1184,20 +1220,22 @@
     const token = ++S.navToken;
     if (first || REDUCED) { draw(r); return; }
 
-    const wipe = $('#wipe'), main = $('#view');
+    const main = $('#view');
     const x = S.px ?? window.innerWidth / 2, y = S.py ?? window.innerHeight / 2;
-    const rad = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y)) + 20;
-    wipe.style.setProperty('--x', x + 'px');
-    wipe.style.setProperty('--y', y + 'px');
-    wipe.style.setProperty('--r', rad + 'px');
-    wipe.className = 'wipe is-in';
-    await wait(520);
+    S.px = S.py = null;
+    document.body.classList.add('is-moving');
+    showLabel(r.view);
+    await stage().cover(x, y);
     if (token !== S.navToken) return;
     draw(r);
+    await wait(220);                      // let the page name land before the burn takes it away
+    if (token !== S.navToken) return;
     main.classList.remove('view-in'); void main.offsetWidth; main.classList.add('view-in');
-    wipe.className = 'wipe is-out';
-    await wait(480);
-    if (token === S.navToken) wipe.className = 'wipe';
+    $('#pt').className = 'pt is-out';
+    await stage().reveal();
+    if (token !== S.navToken) return;
+    $('#pt').className = 'pt';
+    document.body.classList.remove('is-moving');
   }
 
   /* Scroll-linked bits, batched into one frame: header state, progress bar, hero parallax. */
@@ -1333,35 +1371,47 @@
     sheetDrag();
     tilt();
 
-    const loaderEl = $('#loader');
-    const fx = window.FX.intro($('#loaderFx'), ['WEBLUXE', 'FOODS']);
-    const msgs = ['Pe sof lapoel…', 'Pe koup legim…', 'Pe roul dholl puri…', 'Preske pare!'];
-    const bar = $('#loaderBar'), pct = $('#loaderPct'), msg = $('#loaderMsg');
-    let done = 0, shownPct = 0;
+    /* Intro: the wordmark punches in straight away (CSS); the WebGL wok fire joins as soon as three.js has
+       loaded. When the photos are in and the toss has peaked, time slows, the camera pushes through the
+       ingredients and the screen burns away onto the hero. Tap anywhere to cut it short. */
+    const intro = $('#intro'), veil = $('#veil'), pct = $('#introPct'), msg = $('#introMsg');
+    const msgs = ['Pe lalim dife…', 'Pe koup piman…', 'Pe tay mine…', 'Pare!'];
+    let skip = false;
+    intro.addEventListener('pointerdown', () => { skip = true; }, { once: true });
+    requestAnimationFrame(() => intro.classList.add('is-lit'));
+
     const small = window.FX.SMALL;
-    const assets = [`hero-wok${small ? '-sm' : ''}`, 'mine-frite-sm', 'dholl-puri-sm', 'gato-pima-sm', 'coin-spin'];
-    const total = assets.length + 1;
+    const assets = [`hero-mine${small ? '-sm' : ''}`, 'mine-frite-sm', 'dholl-puri-sm', 'gato-pima-sm'];
+    const total = assets.length + 2;
+    let done = 0, shown = 0;
     const step = () => {
-      done++;
-      const p = done / total;
-      fx.set(p);
-      bar.style.transform = `scaleX(${p})`;
-      const from = shownPct; shownPct = p * 100;
-      tween(from, shownPct, 400, (v) => { pct.textContent = Math.round(v); });
-      msg.textContent = msgs[Math.min(msgs.length - 1, Math.floor(p * msgs.length))];
+      const from = shown; shown = (++done / total) * 100;
+      tween(from, shown, 500, (v) => { pct.textContent = pad(Math.round(v)); });
+      msg.textContent = msgs[Math.min(msgs.length - 1, Math.floor((done / total) * (msgs.length - 1)))];
     };
     const load = (name) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = res; im.src = `img/${name}.webp`; }).then(step);
-    // The wordmark is drawn with the display font, so rebuild the particle targets once it arrives.
-    const fonts = Promise.race([document.fonts?.load?.('100px Anton') || Promise.resolve(), wait(2500)]).then(() => { fx.rebuild(); step(); });
-    await Promise.race([Promise.all([...assets.map(load), fonts, wait(REDUCED ? 0 : 1900)]), wait(6000)]);
-    fx.set(1); bar.style.transform = 'scaleX(1)'; msg.textContent = msgs[3];
-    await wait(REDUCED ? 0 : 1100);         // let the last particles settle into the wordmark
-    pct.textContent = '100';
+    const fonts = Promise.race([document.fonts?.load?.('100px Anton') || Promise.resolve(), wait(2500)]).then(step);
+    const ready = Promise.race([Promise.all([...assets.map(load), fonts]), wait(7000)]);
 
-    fx.burst();
-    loaderEl.classList.add('is-done');
+    // three.js is ~170 KB gzipped: wait for it a while, but never hold the site hostage
+    const gl = await Promise.race([
+      window.STAGE !== undefined ? Promise.resolve(window.STAGE) : new Promise((r) => addEventListener('stage:ready', () => r(window.STAGE), { once: true })),
+      wait(4500).then(() => null),
+    ]);
+    const t0 = performance.now();
+    if (gl) { await gl.introStart(); veil.className = 'veil is-gone'; }
+    step();                                                // the stage counts as one asset
+    await ready;
+    // give the toss time to rise and peak (unless the visitor tapped)
+    while (!skip && !REDUCED && performance.now() - t0 < (gl ? 2300 : 1200)) await wait(60);
+    pct.textContent = '100'; msg.textContent = msgs[3];
+
+    intro.classList.add('is-out');
+    await wait(REDUCED ? 0 : 160);
+    if (gl) await gl.introExit();
+    else await VEIL.reveal();
     document.body.classList.remove('is-loading');
-    setTimeout(() => { fx.stop(); loaderEl.remove(); }, 900);
+    setTimeout(() => intro.remove(), 1400);
   }
   boot();
 })();
