@@ -74,10 +74,8 @@
 
   /* Responsive WebP: a small file for phones/cards, a larger one for big slots. */
   function pic(name, alt, sizes, opt = {}) {
-    const set = opt.wide
-      ? `img/${name}-sm.webp 820w, img/${name}-md.webp 1080w, img/${name}.webp 1600w`
-      : `img/${name}-sm.webp 420w, img/${name}.webp 800w`;
-    return `<img src="img/${name}-sm.webp" srcset="${set}" sizes="${sizes}" alt="${esc(alt)}" decoding="async" ${opt.eager ? 'fetchpriority="high"' : 'loading="lazy"'}>`;
+    const [s, l] = opt.wide ? [820, 1600] : [420, 800];
+    return `<img src="img/${name}-sm.webp" srcset="img/${name}-sm.webp ${s}w, img/${name}.webp ${l}w" sizes="${sizes}" alt="${esc(alt)}" decoding="async" ${opt.eager ? 'fetchpriority="high"' : 'loading="lazy"'}>`;
   }
 
   const TABS = [['home', 'Home'], ['menu', 'Menu'], ['orders', 'My Orders'], ['about', 'Find Us']];
@@ -225,7 +223,7 @@
         <h3 class="card__name">${esc(i.name)}</h3>
         <span class="price">${rs(i.price)}</span>
         <p class="card__desc">${esc(i.desc)}</p>
-        <span class="card__add" aria-hidden="true">${ic('plus')}</span>
+        <span class="card__add">${ic('plus')}<span>Choose &amp; add</span></span>
       </div>
     </article>`;
   }
@@ -254,12 +252,12 @@
 
     $('#footer').innerHTML = `
       <div class="wrap site-footer__grid">
-        <div class="site-footer__brand">
+        <div>
           <div class="logo logo--lg">${LOGO}</div>
           <p class="site-footer__tag">${esc(B.tagline)}. Cooked to order, collected without the queue.</p>
           <a class="btn btn--wa btn--sm" href="https://wa.me/${B.whatsapp}" target="_blank" rel="noopener">${ic('chat')} Chat on WhatsApp</a>
         </div>
-        <div class="site-footer__nav">
+        <div>
           <h4>Directly to</h4>
           <a href="#/menu">The menu</a><a href="#/orders">My orders</a><a href="#/about">Find us</a>
         </div>
@@ -315,18 +313,17 @@
           <a class="btn btn--ghost btn--lg" href="#ahead" data-action="scroll-to" data-target="#ahead">How it works</a>
         </div>
       </div>
-      <a class="hero__cue" href="#sigs" data-action="scroll-to" data-target="#sigs" aria-label="Scroll to the house favourites"><i></i></a>
       <div class="hero__dots" id="heroDots">${HERO.map((_, n) => `<button class="${n === 0 ? 'is-on' : ''}" data-action="hero-go" data-n="${n}" aria-label="Slide ${n + 1}"><i></i></button>`).join('')}</div>
     </section>
 
-    <section class="sec sec--statement">
+    <section class="sec">
       <div class="wrap statement">
         <p class="script reveal">Kitchen &amp; takeaway</p>
         <p class="reveal" style="--i:1">A small kitchen with a short menu, <em>cooked to order</em> and ready when you walk in.</p>
       </div>
     </section>
 
-    <section class="sec sec--sigs" id="sigs">
+    <section class="sec">
       <div class="wrap">
         <div class="sec__head">
           <div><p class="script reveal">Signatures</p><h2 class="display reveal">The house <em>favourites</em></h2></div>
@@ -337,7 +334,6 @@
           <article class="sig reveal" style="--i:${n}" data-action="open-item" data-id="${i.id}" tabindex="0" role="button" aria-label="${esc(i.name)}, ${rs(i.price)}">
             <div class="sig__img">${pic(i.img, i.name, '(max-width: 820px) 46vw, 280px')}</div>
             <div class="sig__body"><span class="sig__cat">${esc(catName(i.cat))}</span><h3>${esc(i.name)}</h3><span class="price">${rs(i.price)}</span></div>
-            <span class="sig__add" aria-hidden="true">${ic('plus')}</span>
           </article>`).join('')}
         </div>
       </div>
@@ -382,19 +378,6 @@
     start();
     S.heroGo = (n) => { show(n); start(); };
     S.cleanup.push(() => clearInterval(timer));
-
-    // Phones: swipe the hero sideways to change dish
-    const hero = $('#hero');
-    let sx = null, sy = 0;
-    hero.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-    hero.addEventListener('touchend', (e) => {
-      if (sx === null) return;
-      const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-      sx = null;
-      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-      buzz(6);
-      S.heroGo((cur + (dx < 0 ? 1 : HERO.length - 1)) % HERO.length);
-    }, { passive: true });
   }
 
   /* -------------------------------------------------------------------- MENU */
@@ -885,12 +868,6 @@
       return qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
     } catch { return ''; }
   }
-  let qrLoading = null;
-  const loadQr = () => window.qrcode ? Promise.resolve() : (qrLoading ||= new Promise((res) => {
-    const s = document.createElement('script');
-    s.src = 'js/vendor/qrcode.min.js'; s.onload = s.onerror = res;
-    document.head.appendChild(s);
-  }));
   const qrText = (o) => `WEBLUXE|${o.number}|${o.code}|${o.total}`;
 
   function trackerHtml(o) {
@@ -934,7 +911,7 @@
       <div class="receipt__row"><span>Payment</span><span>${esc(PAY[o.pay] || o.pay)}</span></div>
       ${o.note ? `<div class="receipt__opt">Kitchen note: ${esc(o.note)}</div>` : ''}
       <div class="receipt__rule"></div>
-      <div class="receipt__qr" id="receiptQr">${window.qrcode ? qrSvg(qrText(o)) : ''}</div>
+      <div class="receipt__qr">${qrSvg(qrText(o))}</div>
       <p class="receipt__c">Pickup code <b class="receipt__code">${o.code}</b></p>
       <p class="receipt__c receipt__thanks">Merci! See you soon.</p>
       <p class="receipt__c receipt__demo">Order summary · pay at the counter</p>
@@ -984,7 +961,6 @@
   function mountOrder() {
     const o = S.orders.find((x) => x.id === S.arg);
     if (!o) return;
-    loadQr().then(() => { const box = $('#receiptQr'); if (box && !box.firstChild && S.arg === o.id) box.innerHTML = qrSvg(qrText(o)); });
     let last = stageOf(o);
     if (S.celebrate === o.id) {
       S.celebrate = null;
@@ -1117,10 +1093,10 @@
           <a class="link-arrow" href="${B.maps}" target="_blank" rel="noopener">Open in Maps ${ic('arrow')}</a></div>
         <div class="info reveal" style="--i:1">${ic('clock')}<h3>When</h3>
           <p>Every day, ${hm(B.hours[0])} – ${hm(B.hours[1])}</p>
-          <span class="status status--solid ${st.open ? 'is-open' : 'is-closed'}"><i></i>${st.open ? 'Open now' : 'Closed now'}</span>
-          <a class="link-arrow" href="https://wa.me/${B.whatsapp}" target="_blank" rel="noopener">WhatsApp us ${ic('arrow')}</a></div>
+          <span class="status status--solid ${st.open ? 'is-open' : 'is-closed'}"><i></i>${st.text}</span>
+          <a class="btn btn--wa btn--sm" href="https://wa.me/${B.whatsapp}" target="_blank" rel="noopener">${ic('chat')} WhatsApp us</a></div>
         <div class="info info--dark reveal" style="--i:2">${ic('bag')}<h3>Q-Skip counter</h3>
-          <p>Ordered online? The Q-Skip counter is on your right as you walk in. Show your order number and pickup code.</p>
+          <p>Ordered online? Skip the line. The Q-Skip counter is on your right as you walk in: show your order number and pickup code.</p>
           <a class="btn btn--gold" href="#/menu">Order now ${ic('arrow')}</a></div>
       </div>
     </div>`;
@@ -1350,17 +1326,18 @@
     intro.addEventListener('pointerdown', () => { skip = true; }, { once: true });
     requestAnimationFrame(() => intro.classList.add('is-lit'));
 
-    const total = 3;
+    const small = window.FX.SMALL;
+    const assets = [`hero-burger${small ? '-sm' : ''}`, 'burger-classic-sm', 'poulet-croustillant-sm', 'fondant-sm'];
+    const total = assets.length + 2;
     let done = 0, shown = 0;
     const step = () => {
       const from = shown; shown = (++done / total) * 100;
       tween(from, shown, 600, (v) => { pct.textContent = pad(Math.round(v)); bar.style.transform = `scaleX(${v / 100})`; });
       msg.textContent = msgs[Math.min(msgs.length - 1, Math.floor((done / total) * (msgs.length - 1)))];
     };
-    const heroImg = $('.hero__slide img');
-    const heroReady = (!heroImg || heroImg.complete ? Promise.resolve() : new Promise((res) => { heroImg.onload = heroImg.onerror = res; })).then(step);
+    const load = (name) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = res; im.src = `img/${name}.webp`; }).then(step);
     const fonts = Promise.race([document.fonts?.load?.('500 100px "Cormorant Garamond"') || Promise.resolve(), wait(2500)]).then(step);
-    const ready = Promise.race([Promise.all([heroReady, fonts]), wait(7000)]);
+    const ready = Promise.race([Promise.all([...assets.map(load), fonts]), wait(7000)]);
 
     // three.js is ~170 KB gzipped: wait for it a while, but never hold the site hostage
     const gl = await Promise.race([

@@ -47,32 +47,24 @@ npm install
 npm start        # serves the folder at http://localhost:5173
 ```
 
-Any static file server works.
+Any static file server works; nothing needs to be built to run the site.
 
 ## Editing
 
-| What | Where | Rebuild? |
-|---|---|---|
-| Restaurant name, phone, WhatsApp number, hours, VAT rate | `js/data.js` → `brand` | no |
-| Menus, dishes, prices, option groups | `js/data.js` → `categories`, `items` | no |
-| Photos | `img/` — each dish has `name.webp` (800px wide) and `name-sm.webp` (420px); hero photos also have `-md` (1080px) | no |
-| Styles | `scss/` (`_phone.scss` holds the one-screen-per-section phone layout) | `npm run build` |
-| Behaviour | `js/app.js` (app), `js/fx.js` (canvas effects), `js/stage.js` (WebGL intro and transitions) | `npm run build` |
+| What | Where |
+|---|---|
+| Restaurant name, phone, WhatsApp number, hours, VAT rate | `js/data.js` → `brand` |
+| Menus, dishes, prices, option groups | `js/data.js` → `categories`, `items` |
+| Photos | `img/` — each dish has `name.webp` (800px wide) and `name-sm.webp` (420px) |
+| Styles | `scss/` — then run `npm run build` to regenerate `css/main.css` |
+| Behaviour | `js/app.js` (app), `js/fx.js` (canvas effects) |
 
 ```bash
-npm run build    # compiles scss/ → css/main.css and js/ → js/app.min.js, js/stage.min.js
-npm run watch    # recompile the SCSS on save
+npm run build    # compile SCSS once
+npm run watch    # recompile on save
 ```
 
-The page loads the built files (`css/main.css`, `js/app.min.js`, `js/stage.min.js`), which are committed so the
-site works on GitHub Pages without a build step. `js/stage.min.js` contains only the parts of three.js the
-intro uses; the QR library is loaded on demand when a ticket is opened.
-
-## On phones
-
-Each section of the home page is sized to exactly one visible screen (small viewport minus the tab bar) with a
-gentle scroll snap, and the Orders and Find Us pages fit on one screen, so nothing needs "a little more"
-scrolling to be seen whole. The menu is a list and scrolls normally; each four-dish category fits one screen.
+`css/main.css` is committed so the site works on GitHub Pages without a build step.
 
 ## Credits
 
