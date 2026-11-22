@@ -6,7 +6,7 @@
    2. Tab transitions: the ink pours in from wherever you tapped (a few gold-leaf flakes flutter off your
       finger) behind a fine brass rim, the next page is drawn underneath, then the ink rolls away again.
    It only renders while something is moving; when idle the canvas is hidden and the loop is stopped. */
-import * as THREE from './vendor/three.module.min.js';
+import * as THREE from 'three';
 
 const canvas = document.getElementById('stage');
 const SMALL = matchMedia('(max-width: 820px)').matches;

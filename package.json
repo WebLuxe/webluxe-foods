@@ -4,12 +4,16 @@
   "description": "WebLuxe Foods — Mauritian street kitchen. Static Q-Skip takeaway ordering site (SCSS + canvas, no backend).",
   "private": true,
   "scripts": {
-    "build": "sass scss/main.scss css/main.css --style=compressed --no-source-map",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "sass scss/main.scss css/main.css --style=compressed --no-source-map",
+    "build:js": "node build.mjs",
     "watch": "sass scss/main.scss css/main.css --watch --no-source-map",
     "start": "npx --yes serve -l 5173 ."
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "qrcode-generator": "^1.4.4",
-    "sass": "^1.80.0"
+    "sass": "^1.80.0",
+    "three": "^0.170.0"
   }
 }
