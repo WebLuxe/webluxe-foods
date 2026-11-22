@@ -1,0 +1,11 @@
+{
+  "name": "WebLuxe Foods",
+  "short_name": "WebLuxe Foods",
+  "description": "Kitchen & takeaway in Grand Baie. Order ahead with Q-Skip.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#171411",
+  "theme_color": "#171411",
+  "icons": [{ "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }]
+}
